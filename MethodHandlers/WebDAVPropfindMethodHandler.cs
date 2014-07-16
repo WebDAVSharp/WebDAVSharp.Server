@@ -168,7 +168,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             var list = new List<IWebDavStoreItem>();
 
             // if the item is a collection
-            if (iWebDavStoreItem.GetType() == (typeof(WebDavDiskStoreCollection)))
+            if (typeof(IWebDavStoreCollection).IsAssignableFrom(iWebDavStoreItem.GetType()))
             {
                 list.Add(iWebDavStoreItem);
 
@@ -190,7 +190,7 @@ namespace WebDAVSharp.Server.MethodHandlers
                 return list;
             }
             // if the item is a document
-            else if (iWebDavStoreItem.GetType() == (typeof(WebDavDiskStoreDocument)))
+            else if (typeof(IWebDavStoreDocument).IsAssignableFrom(iWebDavStoreItem.GetType()))
             {
                 list.Add(iWebDavStoreItem);
 
