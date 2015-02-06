@@ -49,7 +49,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             // Gets the item name from the url
             string itemName = Uri.UnescapeDataString(context.Request.Url.Segments.Last().TrimEnd('/', '\\'));
 
-            var item = parentCollection.GetItemByName(itemName);
+            IWebDavStoreItem item = parentCollection.GetItemByName(itemName);
             IWebDavStoreDocument doc;
             if (item != null)
             {
@@ -65,7 +65,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             if (context.Request.ContentLength64 < 0)
                 throw new WebDavLengthRequiredException();
 
-            using (var stream = doc.OpenWriteStream(false))
+            using (Stream stream = doc.OpenWriteStream(false))
             {
                 long left = context.Request.ContentLength64;
                 byte[] buffer = new byte[4096];

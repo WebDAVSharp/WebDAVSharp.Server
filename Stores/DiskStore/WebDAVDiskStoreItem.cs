@@ -131,7 +131,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         {
             get
             {
-                var dir = new DirectoryInfo(_path);
+                DirectoryInfo dir = new DirectoryInfo(_path);
                 return (dir.Attributes & FileAttributes.Hidden) != 0 ? 1 : 0;
             }
         }

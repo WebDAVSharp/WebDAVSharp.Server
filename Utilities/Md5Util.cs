@@ -21,7 +21,7 @@ namespace WebDAVSharp.Server.Utilities
         {
             byte[] bytes = Encoding.UTF8.GetBytes(s);
 
-            var md5 = MD5.Create();
+            MD5 md5 = MD5.Create();
             byte[] hashBytes = md5.ComputeHash(bytes);
  
             return HexStringFromBytes(hashBytes);
@@ -36,7 +36,7 @@ namespace WebDAVSharp.Server.Utilities
         /// </returns>
         public static string HexStringFromBytes(byte[] bytes)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             foreach (string hex in bytes.Select(b => b.ToString("x2")))
                 sb.Append(hex);
             return sb.ToString();

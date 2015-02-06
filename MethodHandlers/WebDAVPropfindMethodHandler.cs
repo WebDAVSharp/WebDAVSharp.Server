@@ -152,11 +152,11 @@ namespace WebDAVSharp.Server.MethodHandlers
         private static List<IWebDavStoreItem> GetWebDavStoreItems(IWebDavStoreItem iWebDavStoreItem, int depth)
         {
             ILog _log = LogManager.GetCurrentClassLogger();
-            var list = new List<IWebDavStoreItem>();
+            List<IWebDavStoreItem> list = new List<IWebDavStoreItem>();
 
             //IWebDavStoreCollection
             // if the item is a collection
-            var collection = iWebDavStoreItem as IWebDavStoreCollection;
+            IWebDavStoreCollection collection = iWebDavStoreItem as IWebDavStoreCollection;
             if (collection != null)
             {
                 list.Add(collection);
@@ -224,7 +224,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// </returns>
         private List<WebDavProperty> GetAllProperties()
         {
-            var list = new List<WebDavProperty>
+            List<WebDavProperty> list = new List<WebDavProperty>
             {
                 new WebDavProperty("creationdate"),
                 new WebDavProperty("displayname"),
@@ -353,7 +353,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             if (webDavProperty.Name != "resourcetype" || !iWebDavStoreItem.IsCollection)
                 return xmlElement;
 
-            var collectionProperty = new WebDavProperty("collection", "");
+            WebDavProperty collectionProperty = new WebDavProperty("collection", "");
             xmlElement.AppendChild(collectionProperty.ToXmlElement(xmlDocument));
             return xmlElement;
         }

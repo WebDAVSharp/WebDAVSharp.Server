@@ -38,8 +38,8 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         {
             get
             {
-                var toDelete = new HashSet<WeakReference>(_items.Values);
-                var items = new List<IWebDavStoreItem>();
+                HashSet<WeakReference> toDelete = new HashSet<WeakReference>(_items.Values);
+                List<IWebDavStoreItem> items = new List<IWebDavStoreItem>();
 
                 // TODO: Refactor to get rid of duplicate loop code
                 List<string> directories = new List<string>();
@@ -48,7 +48,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                     // Impersonate the current user and get all the directories
                     using (Identity.Impersonate())
                     {
-                        foreach (var dirName in Directory.GetDirectories(ItemPath))
+                        foreach (string dirName in Directory.GetDirectories(ItemPath))
                         {
                             try
                             {
@@ -176,12 +176,12 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// </remarks>
         private static bool CanReadDirectory(string path)
         {
-            var readAllow = false;
-            var readDeny = false;
-            var accessControlList = Directory.GetAccessControl(path);
+            bool readAllow = false;
+            bool readDeny = false;
+            DirectorySecurity accessControlList = Directory.GetAccessControl(path);
             if (accessControlList == null)
                 return false;
-            var accessRules = accessControlList.GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
+            AuthorizationRuleCollection accessRules = accessControlList.GetAccessRules(true, true, typeof(SecurityIdentifier));
 
             foreach (FileSystemAccessRule rule in accessRules.Cast<FileSystemAccessRule>().Where(rule => (FileSystemRights.Read & rule.FileSystemRights) == FileSystemRights.Read))
             {
@@ -259,7 +259,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException">If the user is unauthorized or has no access.</exception>
         public void Delete(IWebDavStoreItem item)
         {
-            var diskItem = (WebDavDiskStoreItem)item;
+            WebDavDiskStoreItem diskItem = (WebDavDiskStoreItem)item;
             string itemPath = diskItem.ItemPath;
             if (item is WebDavDiskStoreDocument)
             {
@@ -323,7 +323,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                 throw new WebDavUnauthorizedException();
             }
 
-            var document = new WebDavDiskStoreDocument(this, itemPath);
+            WebDavDiskStoreDocument document = new WebDavDiskStoreDocument(this, itemPath);
             _items.Add(name, new WeakReference(document));
             return document;
 
@@ -360,7 +360,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                 }
 
                 // We return the moved file as a WebDAVDiskStoreDocument
-                var collection = new WebDavDiskStoreCollection(this, destinationItemPath);
+                WebDavDiskStoreCollection collection = new WebDavDiskStoreCollection(this, destinationItemPath);
                 _items.Add(destinationName, new WeakReference(collection));
                 return collection;
             }
@@ -380,7 +380,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                 }
 
                 // We return the moved file as a WebDAVDiskStoreDocument
-                var document = new WebDavDiskStoreDocument(this, destinationItemPath);
+                WebDavDiskStoreDocument document = new WebDavDiskStoreDocument(this, destinationItemPath);
                 _items.Add(destinationName, new WeakReference(document));
                 return document;
 
@@ -489,7 +489,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                     }
 
             // We return the moved file as a WebDAVDiskStoreDocument
-            var document = new WebDavDiskStoreDocument(this, destinationItemPath);
+            WebDavDiskStoreDocument document = new WebDavDiskStoreDocument(this, destinationItemPath);
             _items.Add(destinationName, new WeakReference(document));
             return document;
             

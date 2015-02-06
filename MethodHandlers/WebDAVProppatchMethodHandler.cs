@@ -131,7 +131,7 @@ namespace WebDAVSharp.Server.MethodHandlers
              ***************************************************************************************************/
 
             // Create the basic response XmlDocument
-            var responseDoc = new XmlDocument();
+            XmlDocument responseDoc = new XmlDocument();
             const string responseXml = "<?xml version=\"1.0\" encoding=\"utf-8\" ?><D:multistatus " +
                                        "xmlns:Z=\"urn:schemas-microsoft-com:\" xmlns:D=\"DAV:\">" +
                                        "<D:response></D:response></D:multistatus>";

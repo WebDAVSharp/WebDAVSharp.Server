@@ -46,9 +46,9 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <exception cref="WebDavConflictException"><paramref name="context" /> specifies a request for a store item using a collection path that does not exist.</exception>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
         {
-            var collection = GetParentCollection(server, store, context.Request.Url);
-            var item = GetItemFromCollection(collection, context.Request.Url);
-            var doc = item as IWebDavStoreDocument;
+            IWebDavStoreCollection collection = GetParentCollection(server, store, context.Request.Url);
+            IWebDavStoreItem item = GetItemFromCollection(collection, context.Request.Url);
+            IWebDavStoreDocument doc = item as IWebDavStoreDocument;
             if (doc == null)
                 throw new WebDavNotFoundException();
 
@@ -66,7 +66,7 @@ namespace WebDAVSharp.Server.MethodHandlers
                 if (docSize > 0)
                     context.Response.ContentLength64 = docSize;
 
-                var buffer = new byte[4096];
+                byte[] buffer = new byte[4096];
                 int inBuffer;
                 while ((inBuffer = stream.Read(buffer, 0, buffer.Length)) > 0)
                     context.Response.OutputStream.Write(buffer, 0, inBuffer);

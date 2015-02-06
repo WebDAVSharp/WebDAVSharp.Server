@@ -60,12 +60,12 @@ namespace WebDAVSharp.Server.MethodHandlers
             IWebDavStoreItem sourceWebDavStoreItem)
         {
             Uri destinationUri = GetDestinationHeader(context.Request);
-            var destinationParentCollection = GetParentCollection(server, store, destinationUri);
+            IWebDavStoreCollection destinationParentCollection = GetParentCollection(server, store, destinationUri);
 
             bool isNew = true;
 
             string destinationName = Uri.UnescapeDataString(destinationUri.Segments.Last().TrimEnd('/', '\\'));
-            var destination = destinationParentCollection.GetItemByName(destinationName);
+            IWebDavStoreItem destination = destinationParentCollection.GetItemByName(destinationName);
             if (destination != null)
             {
                 if (sourceWebDavStoreItem.ItemPath == destination.ItemPath)

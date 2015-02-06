@@ -60,8 +60,8 @@ namespace WebDAVSharp.Server.MethodHandlers
         private static void CopyItem(WebDavServer server, IHttpListenerContext context, IWebDavStore store,
             IWebDavStoreItem source)
         {
-            var destinationUri = GetDestinationHeader(context.Request);
-            var destinationParentCollection = GetParentCollection(server, store, destinationUri);
+            Uri destinationUri = GetDestinationHeader(context.Request);
+            IWebDavStoreCollection destinationParentCollection = GetParentCollection(server, store, destinationUri);
 
             bool copyContent = (GetDepthHeader(context.Request) != 0);
             bool isNew = true;

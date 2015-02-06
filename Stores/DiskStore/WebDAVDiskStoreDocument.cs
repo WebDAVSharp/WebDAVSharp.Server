@@ -110,7 +110,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         {
             if (append)
             {
-                var result = new FileStream(ItemPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                FileStream result = new FileStream(ItemPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
                 result.Seek(0, SeekOrigin.End);
                 return result;
             }

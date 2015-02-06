@@ -23,7 +23,7 @@ namespace WebDAVSharp.Server.Adapters
         public HttpListenerResponseAdapter(HttpListenerResponse Response)
         {
         if (Response == null)
-                throw new ArgumentNullException("response");
+            throw new ArgumentNullException("Response");
 
         _response = Response;
         }

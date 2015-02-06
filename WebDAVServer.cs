@@ -69,7 +69,7 @@ namespace WebDAVSharp.Server
             }
             methodHandlers = methodHandlers ?? WebDavMethodHandlers.BuiltIn;
 
-            var webDavMethodHandlers = methodHandlers as IWebDavMethodHandler[] ?? methodHandlers.ToArray();
+            IWebDavMethodHandler[] webDavMethodHandlers = methodHandlers as IWebDavMethodHandler[] ?? methodHandlers.ToArray();
 
             if (!webDavMethodHandlers.Any())
                 throw new ArgumentException("The methodHandlers collection is empty", "methodHandlers");
@@ -239,7 +239,7 @@ namespace WebDAVSharp.Server
         private void ProcessRequest(object state)
         {
 
-            var context = (IHttpListenerContext)state;
+            IHttpListenerContext context = (IHttpListenerContext)state;
 
             // For authentication
             Thread.SetData(Thread.GetNamedDataSlot(HttpUser), context.AdaptedInstance.User.Identity);
