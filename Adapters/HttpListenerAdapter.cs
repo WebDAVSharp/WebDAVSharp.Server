@@ -26,6 +26,16 @@ namespace WebDAVSharp.Server.Adapters
         }
 
         /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (_listener.IsListening)
+                _listener.Close();
+        }
+
+        /// <summary>
         /// Waits for a request to come in to the web server and returns a
         /// <see cref="IHttpListenerContext" /> adapter around it.
         /// </summary>
@@ -96,19 +106,6 @@ namespace WebDAVSharp.Server.Adapters
         public void Stop()
         {
             _listener.Stop();
-        }
-
-        /// <summary>
-        ///     Releases unmanaged and - optionally - managed resources
-        /// </summary>
-        /// <param name="disposing">
-        ///     <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only
-        ///     unmanaged resources.
-        /// </param>
-        protected override void Dispose(bool disposing)
-        {
-            if (_listener.IsListening)
-                _listener.Close();
         }
     }
 }
