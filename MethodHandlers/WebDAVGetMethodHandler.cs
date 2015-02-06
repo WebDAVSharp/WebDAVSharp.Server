@@ -8,15 +8,15 @@ using WebDAVSharp.Server.Stores;
 namespace WebDAVSharp.Server.MethodHandlers
 {
     /// <summary>
-    /// This class implements the <c>GET</c> HTTP method for WebDAV#.
+    ///     This class implements the <c>GET</c> HTTP method for WebDAV#.
     /// </summary>
     public sealed class WebDavGetMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         /// <summary>
-        /// Gets the collection of the names of the verbs handled by this instance.
+        ///     Gets the collection of the names of the verbs handled by this instance.
         /// </summary>
         /// <value>
-        /// The names.
+        ///     The names.
         /// </value>
         public IEnumerable<string> Names
         {
@@ -30,24 +30,33 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        /// Processes the request.
+        ///     Processes the request.
         /// </summary>
         /// <param name="server">The <see cref="WebDavServer" /> through which the request came in from the client.</param>
-        /// <param name="context">The
-        /// <see cref="IHttpListenerContext" /> object containing both the request and response
-        /// objects to use.</param>
+        /// <param name="context">
+        ///     The
+        ///     <see cref="IHttpListenerContext" /> object containing both the request and response
+        ///     objects to use.
+        /// </param>
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavNotFoundException"></exception>
-        /// <exception cref="WebDavNotFoundException"><para>
-        ///   <paramref name="context" /> specifies a request for a store item that does not exist.</para>
-        /// <para>- or -</para>
-        /// <para>
-        ///   <paramref name="context" /> specifies a request for a store item that is not a document.</para></exception>
-        /// <exception cref="WebDavConflictException"><paramref name="context" /> specifies a request for a store item using a collection path that does not exist.</exception>
+        /// <exception cref="WebDavNotFoundException">
+        ///     <para>
+        ///         <paramref name="context" /> specifies a request for a store item that does not exist.
+        ///     </para>
+        ///     <para>- or -</para>
+        ///     <para>
+        ///         <paramref name="context" /> specifies a request for a store item that is not a document.
+        ///     </para>
+        /// </exception>
+        /// <exception cref="WebDavConflictException">
+        ///     <paramref name="context" /> specifies a request for a store item using a
+        ///     collection path that does not exist.
+        /// </exception>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
         {
-            var collection = GetParentCollection(server, store, context.Request.Url);
-            var item = GetItemFromCollection(collection, context.Request.Url);
+            IWebDavStoreCollection collection = GetParentCollection(server, store, context.Request.Url);
+            IWebDavStoreItem item = GetItemFromCollection(collection, context.Request.Url);
             var doc = item as IWebDavStoreDocument;
             if (doc == null)
                 throw new WebDavNotFoundException();
@@ -55,13 +64,13 @@ namespace WebDAVSharp.Server.MethodHandlers
             long docSize = doc.Size;
             if (docSize == 0)
             {
-                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                context.Response.StatusCode = (int) HttpStatusCode.OK;
                 context.Response.ContentLength64 = 0;
             }
 
             using (Stream stream = doc.OpenReadStream())
             {
-                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                context.Response.StatusCode = (int) HttpStatusCode.OK;
 
                 if (docSize > 0)
                     context.Response.ContentLength64 = docSize;
