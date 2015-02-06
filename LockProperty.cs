@@ -1,12 +1,19 @@
 ﻿namespace WebDAVSharp.Server
 {
     /// <summary>
-    ///     The property with all the information of a lock
+    /// The property with all the information of a lock
     /// </summary>
-    internal class LockProperty
+    class LockProperty
     {
+        public string Locktype { get; set; }
+        public string Lockscope { get; set; }
+        public string Depth { get; set; }
+        public string Owner { get; set; }
+        public string Timeout { get; set; }
+        public string Locktoken { get; set; }
+
         /// <summary>
-        ///     The standard constructor
+        /// The standard constructor
         /// </summary>
         public LockProperty()
         {
@@ -19,7 +26,7 @@
         }
 
         /// <summary>
-        ///     The constructor with all the specific values
+        /// The constructor with all the specific values
         /// </summary>
         /// <param name="locktype">The locktype of the lock</param>
         /// <param name="lockscope">The lockscope of the lock</param>
@@ -27,8 +34,7 @@
         /// <param name="owner">The owner of the lock</param>
         /// <param name="timeout">The timeout of the lock</param>
         /// <param name="locktoken">The locktoken.</param>
-        public LockProperty(string locktype, string lockscope, string depth, string owner, string timeout,
-            string locktoken)
+        public LockProperty(string locktype, string lockscope, string depth, string owner, string timeout, string locktoken)
         {
             Locktype = locktype;
             Lockscope = lockscope;
@@ -38,11 +44,6 @@
             Locktoken = locktoken;
         }
 
-        public string Locktype { get; set; }
-        public string Lockscope { get; set; }
-        public string Depth { get; set; }
-        public string Owner { get; set; }
-        public string Timeout { get; set; }
-        public string Locktoken { get; set; }
+
     }
 }

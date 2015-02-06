@@ -13,7 +13,7 @@ using WebDAVSharp.Server.Utilities;
 namespace WebDAVSharp.Server.MethodHandlers
 {
     /// <summary>
-    ///     This class implements the <c>PROPFIND</c> HTTP method for WebDAV#.
+    /// This class implements the <c>PROPFIND</c> HTTP method for WebDAV#.
     /// </summary>
     internal class WebDavPropfindMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
@@ -23,10 +23,10 @@ namespace WebDAVSharp.Server.MethodHandlers
         private List<IWebDavStoreItem> _webDavStoreItems;
 
         /// <summary>
-        ///     Gets the collection of the names of the HTTP methods handled by this instance.
+        /// Gets the collection of the names of the HTTP methods handled by this instance.
         /// </summary>
         /// <value>
-        ///     The names.
+        /// The names.
         /// </value>
         public IEnumerable<string> Names
         {
@@ -40,12 +40,12 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        ///     Processes the request.
+        /// Processes the request.
         /// </summary>
         /// <param name="server">The <see cref="WebDavServer" /> through which the request came in from the client.</param>
-        /// <param name="context">
-        ///     The <see cref="IHttpListenerContext" /> object containing both the request and response objects to use.
-        /// </param>
+        /// <param name="context">The
+        /// <see cref="IHttpListenerContext" /> object containing both the request and response
+        /// objects to use.</param>
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException"></exception>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
@@ -124,11 +124,12 @@ namespace WebDAVSharp.Server.MethodHandlers
         #region RetrieveInformation
 
         /// <summary>
-        ///     Get the URI to the location If no slash at the end of the URI, this method adds one
+        /// Get the URI to the location
+        /// If no slash at the end of the URI, this method adds one
         /// </summary>
         /// <param name="uri">The <see cref="string" /> that contains the URI</param>
         /// <returns>
-        ///     The <see cref="Uri" /> that contains the given uri
+        /// The <see cref="Uri" /> that contains the given uri
         /// </returns>
         private static Uri GetRequestUri(string uri)
         {
@@ -136,13 +137,16 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        ///     Convert the given <see cref="IWebDavStoreItem" /> to a <see cref="List{T}" /> of <see cref="IWebDavStoreItem" />
-        ///     This list depends on the "Depth" header
+        /// Convert the given 
+        /// <see cref="IWebDavStoreItem" /> to a 
+        /// <see cref="List{T}" /> of 
+        /// <see cref="IWebDavStoreItem" />
+        /// This list depends on the "Depth" header
         /// </summary>
         /// <param name="iWebDavStoreItem">The <see cref="IWebDavStoreItem" /> that needs to be converted</param>
         /// <param name="depth">The "Depth" header</param>
         /// <returns>
-        ///     A <see cref="List{T}" /> of <see cref="IWebDavStoreItem" />
+        /// A <see cref="List{T}" /> of <see cref="IWebDavStoreItem" />
         /// </returns>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavConflictException"></exception>
         private static List<IWebDavStoreItem> GetWebDavStoreItems(IWebDavStoreItem iWebDavStoreItem, int depth)
@@ -180,17 +184,20 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        ///     Reads the XML body of the <see cref="IHttpListenerRequest" /> and converts it to an <see cref="XmlDocument" />
+        /// Reads the XML body of the 
+        /// <see cref="IHttpListenerRequest" />
+        /// and converts it to an 
+        /// <see cref="XmlDocument" />
         /// </summary>
         /// <param name="request">The <see cref="IHttpListenerRequest" /></param>
         /// <returns>
-        ///     The <see cref="XmlDocument" /> that contains the request body
+        /// The <see cref="XmlDocument" /> that contains the request body
         /// </returns>
         private XmlDocument GetXmlDocument(IHttpListenerRequest request)
         {
             try
             {
-                var reader = new StreamReader(request.InputStream, Encoding.UTF8);
+                StreamReader reader = new StreamReader(request.InputStream, Encoding.UTF8);
                 string requestBody = reader.ReadToEnd();
                 reader.Close();
 
@@ -210,10 +217,10 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        ///     Adds the standard properties for an Propfind allprop request to a <see cref="List{T}" /> of <see cref="WebDavProperty" />
+        /// Adds the standard properties for an Propfind allprop request to a <see cref="List{T}" /> of <see cref="WebDavProperty" />
         /// </summary>
         /// <returns>
-        ///     The list with all the <see cref="WebDavProperty" />
+        /// The list with all the <see cref="WebDavProperty" />
         /// </returns>
         private List<WebDavProperty> GetAllProperties()
         {
@@ -239,22 +246,22 @@ namespace WebDAVSharp.Server.MethodHandlers
         #region BuildResponseBody
 
         /// <summary>
-        ///     Builds the <see cref="XmlDocument" /> containing the response body
+        /// Builds the <see cref="XmlDocument" /> containing the response body
         /// </summary>
         /// <param name="context">The <see cref="IHttpListenerContext" /></param>
         /// <param name="propname">The boolean defining the Propfind propname request</param>
         /// <returns>
-        ///     The <see cref="XmlDocument" /> containing the response body
+        /// The <see cref="XmlDocument" /> containing the response body
         /// </returns>
         private XmlDocument ResponseDocument(IHttpListenerContext context, bool propname)
         {
             // Create the basic response XmlDocument
-            var responseDoc = new XmlDocument();
+            XmlDocument responseDoc = new XmlDocument();
             const string responseXml = "<?xml version=\"1.0\"?><D:multistatus xmlns:D=\"DAV:\"></D:multistatus>";
             responseDoc.LoadXml(responseXml);
 
             // Generate the manager
-            var manager = new XmlNamespaceManager(responseDoc.NameTable);
+            XmlNamespaceManager manager = new XmlNamespaceManager(responseDoc.NameTable);
             manager.AddNamespace("D", "DAV:");
             manager.AddNamespace("Office", "schemas-microsoft-com:office:office");
             manager.AddNamespace("Repl", "http://schemas.microsoft.com/repl/");
@@ -265,35 +272,41 @@ namespace WebDAVSharp.Server.MethodHandlers
             foreach (IWebDavStoreItem webDavStoreItem in _webDavStoreItems)
             {
                 // Create the response element
-                var responseProperty = new WebDavProperty("response", "");
+                WebDavProperty responseProperty = new WebDavProperty("response", "");
                 XmlElement responseElement = responseProperty.ToXmlElement(responseDoc);
 
                 // The href element
                 Uri result;
                 if (count == 0)
+                {
                     Uri.TryCreate(_requestUri, "", out result);
+                }
                 else
+                {
                     Uri.TryCreate(_requestUri, webDavStoreItem.Name, out result);
-                var hrefProperty = new WebDavProperty("href", result.AbsoluteUri);
+                }
+                WebDavProperty hrefProperty = new WebDavProperty("href", result.AbsoluteUri);
                 responseElement.AppendChild(hrefProperty.ToXmlElement(responseDoc));
                 count++;
 
                 // The propstat element
-                var propstatProperty = new WebDavProperty("propstat", "");
+                WebDavProperty propstatProperty = new WebDavProperty("propstat", "");
                 XmlElement propstatElement = propstatProperty.ToXmlElement(responseDoc);
 
                 // The prop element
-                var propProperty = new WebDavProperty("prop", "");
+                WebDavProperty propProperty = new WebDavProperty("prop", "");
                 XmlElement propElement = propProperty.ToXmlElement(responseDoc);
 
                 foreach (WebDavProperty davProperty in _requestedProperties)
+                {
                     propElement.AppendChild(PropChildElement(davProperty, responseDoc, webDavStoreItem, propname));
+                }
 
                 // Add the prop element to the propstat element
                 propstatElement.AppendChild(propElement);
 
                 // The status element
-                var statusProperty = new WebDavProperty("status",
+                WebDavProperty statusProperty = new WebDavProperty("status",
                     "HTTP/1.1 " + context.Response.StatusCode + " " +
                     HttpWorkerRequest.GetStatusDescription(context.Response.StatusCode));
                 propstatElement.AppendChild(statusProperty.ToXmlElement(responseDoc));
@@ -309,21 +322,20 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        ///     Gives the
-        ///     <see cref="XmlElement" /> of a
-        ///     <see cref="WebDavProperty" />
-        ///     with or without values
-        ///     or with or without child elements
+        /// Gives the 
+        /// <see cref="XmlElement" /> of a 
+        /// <see cref="WebDavProperty" />
+        /// with or without values
+        /// or with or without child elements
         /// </summary>
         /// <param name="webDavProperty">The <see cref="WebDavProperty" /></param>
         /// <param name="xmlDocument">The <see cref="XmlDocument" /> containing the response body</param>
         /// <param name="iWebDavStoreItem">The <see cref="IWebDavStoreItem" /></param>
         /// <param name="isPropname">The boolean defining the Propfind propname request</param>
         /// <returns>
-        ///     The <see cref="XmlElement" /> of the <see cref="WebDavProperty" /> containing a value or child elements
+        /// The <see cref="XmlElement" /> of the <see cref="WebDavProperty" /> containing a value or child elements
         /// </returns>
-        private XmlElement PropChildElement(WebDavProperty webDavProperty, XmlDocument xmlDocument,
-            IWebDavStoreItem iWebDavStoreItem, bool isPropname)
+        private XmlElement PropChildElement(WebDavProperty webDavProperty, XmlDocument xmlDocument, IWebDavStoreItem iWebDavStoreItem, bool isPropname)
         {
             // If Propfind request contains a propname element
             if (isPropname)
@@ -335,9 +347,9 @@ namespace WebDAVSharp.Server.MethodHandlers
             webDavProperty.Value = GetWebDavPropertyValue(iWebDavStoreItem, webDavProperty);
             XmlElement xmlElement = webDavProperty.ToXmlElement(xmlDocument);
 
-            // If the webDavProperty is the resourcetype property
-            // and the webDavStoreItem is a collection
-            // add the collection XmlElement as a child to the xmlElement
+                // If the webDavProperty is the resourcetype property
+                // and the webDavStoreItem is a collection
+                // add the collection XmlElement as a child to the xmlElement
             if (webDavProperty.Name != "resourcetype" || !iWebDavStoreItem.IsCollection)
                 return xmlElement;
 
@@ -347,12 +359,12 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        ///     Gets the correct value for a <see cref="WebDavProperty" />
+        /// Gets the correct value for a <see cref="WebDavProperty" />
         /// </summary>
         /// <param name="webDavStoreItem">The <see cref="IWebDavStoreItem" /> defines the values</param>
         /// <param name="davProperty">The <see cref="WebDavProperty" /> that needs a value</param>
         /// <returns>
-        ///     A <see cref="string" /> containing the value
+        /// A <see cref="string" /> containing the value
         /// </returns>
         private string GetWebDavPropertyValue(IWebDavStoreItem webDavStoreItem, WebDavProperty davProperty)
         {
@@ -394,7 +406,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         #region SendResponse
 
         /// <summary>
-        ///     Sends the response
+        /// Sends the response
         /// </summary>
         /// <param name="context">The <see cref="IHttpListenerContext" /> containing the response</param>
         /// <param name="responseDocument">The <see cref="XmlDocument" /> containing the response body</param>
@@ -404,15 +416,17 @@ namespace WebDAVSharp.Server.MethodHandlers
             byte[] responseBytes = Encoding.UTF8.GetBytes(responseDocument.InnerXml);
 
             // HttpStatusCode doesn't contain WebDav status codes, but HttpWorkerRequest can handle these WebDav status codes
-            context.Response.StatusCode = (int) WebDavStatusCode.MultiStatus;
-            context.Response.StatusDescription =
-                HttpWorkerRequest.GetStatusDescription((int) WebDavStatusCode.MultiStatus);
+            context.Response.StatusCode = (int)WebDavStatusCode.MultiStatus;
+            context.Response.StatusDescription = HttpWorkerRequest.GetStatusDescription((int)WebDavStatusCode.MultiStatus);
+
             context.Response.ContentLength64 = responseBytes.Length;
             context.Response.AdaptedInstance.ContentType = "text/xml";
             context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);
+
             context.Response.Close();
         }
 
         #endregion
+
     }
 }

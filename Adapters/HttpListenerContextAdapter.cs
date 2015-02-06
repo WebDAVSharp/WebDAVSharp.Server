@@ -4,8 +4,9 @@ using System.Net;
 namespace WebDAVSharp.Server.Adapters
 {
     /// <summary>
-    ///     This <see cref="IHttpListenerContext" /> implementation wraps around a
-    ///     <see cref="HttpListenerContext" /> instance.
+    /// This 
+    /// <see cref="IHttpListenerContext" /> implementation wraps around a
+    /// <see cref="HttpListenerContext" /> instance.
     /// </summary>
     internal sealed class HttpListenerContextAdapter : IHttpListenerContext, IAdapter<HttpListenerContext>
     {
@@ -14,7 +15,7 @@ namespace WebDAVSharp.Server.Adapters
         private readonly HttpListenerResponseAdapter _response;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="HttpListenerContextAdapter" /> class.
+        /// Initializes a new instance of the <see cref="HttpListenerContextAdapter" /> class.
         /// </summary>
         /// <param name="context">The <see cref="HttpListenerContext" /> to adapt for WebDAV#.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
@@ -30,30 +31,39 @@ namespace WebDAVSharp.Server.Adapters
         }
 
         /// <summary>
-        ///     Gets the internal instance that was adapted for WebDAV#.
+        /// Gets the internal instance that was adapted for WebDAV#.
         /// </summary>
         /// <value>
-        ///     The adapted instance.
+        /// The adapted instance.
         /// </value>
         public HttpListenerContext AdaptedInstance
         {
-            get { return _context; }
+            get
+            {
+                return _context;
+            }
         }
 
         /// <summary>
-        ///     Gets the <see cref="IHttpListenerRequest" /> request adapter.
+        /// Gets the <see cref="IHttpListenerRequest" /> request adapter.
         /// </summary>
         public IHttpListenerRequest Request
         {
-            get { return _request; }
+            get
+            {
+                return _request;
+            }
         }
 
         /// <summary>
-        ///     Gets the <see cref="IHttpListenerResponse" /> response adapter.
+        /// Gets the <see cref="IHttpListenerResponse" /> response adapter.
         /// </summary>
         public IHttpListenerResponse Response
         {
-            get { return _response; }
+            get
+            {
+                return _response;
+            }
         }
     }
 }

@@ -3,27 +3,27 @@
 namespace WebDAVSharp.Server
 {
     /// <summary>
-    ///     This class implements the core WebDAV server.
+    /// This class implements the core WebDAV server.
     /// </summary>
     public class WebDavProperty
     {
         /// <summary>
-        ///     This class implements the core WebDAV server.
+        /// This class implements the core WebDAV server.
         /// </summary>
         public string Name;
 
         /// <summary>
-        ///     This class implements the core WebDAV server.
+        /// This class implements the core WebDAV server.
         /// </summary>
         public string Namespace;
 
         /// <summary>
-        ///     This class implements the core WebDAV server.
+        /// This class implements the core WebDAV server.
         /// </summary>
         public string Value;
 
         /// <summary>
-        ///     Standard constructor
+        /// Standard constructor
         /// </summary>
         public WebDavProperty()
         {
@@ -33,7 +33,7 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     Constructor for the WebDAVProperty class with "DAV:" as namespace and an empty value
+        /// Constructor for the WebDAVProperty class with "DAV:" as namespace and an empty value
         /// </summary>
         /// <param name="name">The name of the WebDAV property</param>
         public WebDavProperty(string name)
@@ -44,7 +44,7 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     Constructor for the WebDAVProperty class with "DAV:" as namespace
+        /// Constructor for the WebDAVProperty class with "DAV:" as namespace
         /// </summary>
         /// <param name="name">The name of the WebDAV property</param>
         /// <param name="value">The value of the WebDAV property</param>
@@ -56,7 +56,7 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     Constructor for the WebDAVProperty class
+        /// Constructor for the WebDAVProperty class
         /// </summary>
         /// <param name="name">The name of the WebDAV property</param>
         /// <param name="value">The value of the WebDAV property</param>
@@ -69,10 +69,10 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     This class implements the core WebDAV server.
+        /// This class implements the core WebDAV server.
         /// </summary>
         /// <returns>
-        ///     A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -80,7 +80,7 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     This class implements the core WebDAV server.
+        /// This class implements the core WebDAV server.
         /// </summary>
         /// <returns>The begin tag of an XML element as a string</returns>
         public string StartString()
@@ -91,7 +91,7 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     This class implements the core WebDAV server.
+        /// This class implements the core WebDAV server.
         /// </summary>
         /// <returns>An empty XML element as a string</returns>
         public string EmptyString()
@@ -102,7 +102,7 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     This class implements the core WebDAV server.
+        /// This class implements the core WebDAV server.
         /// </summary>
         /// <returns>The closing tag of an XML element as a string</returns>
         public string EndString()
@@ -113,11 +113,11 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     Creates an XmlDocumentFragment from the current WebDAVProperty
+        /// Creates an XmlDocumentFragment from the current WebDAVProperty
         /// </summary>
         /// <param name="doc">The XmlDocument where a XmlDocumentFragment is needed</param>
         /// <returns>
-        ///     The XmlDocumentFragment of the current WebDAVProperty object
+        /// The XmlDocumentFragment of the current WebDAVProperty object
         /// </returns>
         public XmlDocumentFragment ToXmlDocumentFragment(XmlDocument doc)
         {
@@ -127,11 +127,11 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     reates an XmlElement from the current WebDAVProperty
+        /// reates an XmlElement from the current WebDAVProperty
         /// </summary>
         /// <param name="doc">The XmlDocument where a XmlElement is needed</param>
         /// <returns>
-        ///     The XmlElement of the current WebDAVProperty object
+        /// The XmlElement of the current WebDAVProperty object
         /// </returns>
         public XmlElement ToXmlElement(XmlDocument doc)
         {

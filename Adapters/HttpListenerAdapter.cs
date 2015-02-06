@@ -5,16 +5,16 @@ using System.Threading;
 namespace WebDAVSharp.Server.Adapters
 {
     /// <summary>
-    ///     This
-    ///     <see cref="IHttpListener" /> implementation wraps around a
-    ///     <see cref="HttpListener" /> instance.
+    /// This 
+    /// <see cref="IHttpListener" /> implementation wraps around a
+    /// <see cref="HttpListener" /> instance.
     /// </summary>
     internal sealed class HttpListenerAdapter : WebDavDisposableBase, IHttpListener, IAdapter<HttpListener>
     {
         private readonly HttpListener _listener;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="HttpListenerAdapter" /> class.
+        /// Initializes a new instance of the <see cref="HttpListenerAdapter" /> class.
         /// </summary>
         internal HttpListenerAdapter()
         {
@@ -26,19 +26,19 @@ namespace WebDAVSharp.Server.Adapters
         }
 
         /// <summary>
-        ///     Waits for a request to come in to the web server and returns a
-        ///     <see cref="IHttpListenerContext" /> adapter around it.
+        /// Waits for a request to come in to the web server and returns a
+        /// <see cref="IHttpListenerContext" /> adapter around it.
         /// </summary>
-        /// <param name="abortEvent">
-        ///     A
-        ///     <see cref="EventWaitHandle" /> to use for aborting the wait. If this
-        ///     event becomes set before a request comes in, this method will return
-        ///     <c>null</c>.
-        /// </param>
+        /// <param name="abortEvent">A 
+        /// <see cref="EventWaitHandle" /> to use for aborting the wait. If this
+        /// event becomes set before a request comes in, this method will return 
+        /// <c>null</c>.</param>
         /// <returns>
-        ///     A <see cref="IHttpListenerContext" /> adapter object for a request;
-        ///     or <c>null</c> if the wait for a request was aborted due to
-        ///     <paramref name="abortEvent" /> being set.
+        /// A 
+        /// <see cref="IHttpListenerContext" /> adapter object for a request;
+        /// or 
+        /// <c>null</c> if the wait for a request was aborted due to 
+        /// <paramref name="abortEvent" /> being set.
         /// </returns>
         /// <exception cref="System.ArgumentNullException">abortEvent</exception>
         /// <exception cref="ArgumentNullException"><paramref name="abortEvent" /> is <c>null</c>.</exception>
@@ -55,27 +55,35 @@ namespace WebDAVSharp.Server.Adapters
         }
 
         /// <summary>
-        ///     Gets the internal instance that was adapted for WebDAV#.
+        /// Gets the internal instance that was adapted for WebDAV#.
         /// </summary>
         /// <value>
-        ///     The adapted instance.
+        /// The adapted instance.
         /// </value>
         public HttpListener AdaptedInstance
         {
-            get { return _listener; }
+            get
+            {
+                return _listener;
+            }
         }
 
         /// <summary>
-        ///     Gets the Uniform Resource Identifier (<see cref="Uri" />) prefixes handled by the
-        ///     adapted <see cref="HttpListener" /> object.
+        /// Gets the Uniform Resource Identifier (
+        /// <see cref="Uri" />) prefixes handled by the
+        /// adapted 
+        /// <see cref="HttpListener" /> object.
         /// </summary>
         public HttpListenerPrefixCollection Prefixes
         {
-            get { return _listener.Prefixes; }
+            get
+            {
+                return _listener.Prefixes;
+            }
         }
 
         /// <summary>
-        ///     Allows the adapted <see cref="HttpListener" /> to receive incoming requests.
+        /// Allows the adapted <see cref="HttpListener" /> to receive incoming requests.
         /// </summary>
         public void Start()
         {
@@ -83,7 +91,7 @@ namespace WebDAVSharp.Server.Adapters
         }
 
         /// <summary>
-        ///     Causes the adapted <see cref="HttpListener" /> to stop receiving incoming requests.
+        /// Causes the adapted <see cref="HttpListener" /> to stop receiving incoming requests.
         /// </summary>
         public void Stop()
         {
