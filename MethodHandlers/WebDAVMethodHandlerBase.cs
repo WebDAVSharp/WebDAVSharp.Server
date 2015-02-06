@@ -14,9 +14,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         private const int DepthInfinity = -1;
 
         /// <summary>
-        ///     Get the parent collection from the requested
-        ///     <see cref="Uri" />.
-        ///     <see cref="WebDavException" /> 409 Conflict possible.
+        ///     Get the parent collection from the requested <see cref="Uri" />. <see cref="WebDavException" /> 409 Conflict possible.
         /// </summary>
         /// <param name="server">The <see cref="WebDavServer" /> through which the request came in from the client.</param>
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>

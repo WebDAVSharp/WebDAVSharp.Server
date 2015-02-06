@@ -12,8 +12,7 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
         ///     Initializes a new instance of the <see cref="WebDavStoreItemBase" /> class.
         /// </summary>
         /// <param name="parentCollection">
-        ///     The parent <see cref="IWebDavStoreCollection" /> that contains this
-        ///     <see cref="IWebDavStoreItem" /> implementation.
+        ///     The parent <see cref="IWebDavStoreCollection" /> that contains this <see cref="IWebDavStoreItem" /> implementation.
         /// </param>
         /// <param name="name">The name of this <see cref="IWebDavStoreItem" /></param>
         /// <exception cref="ArgumentNullException"><paramref name="name" /> is <c>null</c>.</exception>

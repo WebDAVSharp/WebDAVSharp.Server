@@ -2,8 +2,7 @@
 {
     /// <summary>
     ///     This interface must be implemented by classes that serve as stores of collections and
-    ///     documents for the
-    ///     <see cref="WebDavServer" />.
+    ///     documents for the <see cref="WebDavServer" />.
     /// </summary>
     public interface IWebDavStore
     {

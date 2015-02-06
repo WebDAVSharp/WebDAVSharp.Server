@@ -6,8 +6,7 @@ using System.Text;
 namespace WebDAVSharp.Server.Adapters
 {
     /// <summary>
-    ///     This
-    ///     <see cref="IHttpListenerResponse" /> implementation wraps around a
+    ///     This <see cref="IHttpListenerResponse" /> implementation wraps around a
     ///     <see cref="HttpListenerResponse" /> instance.
     /// </summary>
     public sealed class HttpListenerResponseAdapter : IHttpListenerResponse

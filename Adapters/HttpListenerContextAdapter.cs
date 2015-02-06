@@ -4,8 +4,7 @@ using System.Net;
 namespace WebDAVSharp.Server.Adapters
 {
     /// <summary>
-    ///     This
-    ///     <see cref="IHttpListenerContext" /> implementation wraps around a
+    ///     This <see cref="IHttpListenerContext" /> implementation wraps around a
     ///     <see cref="HttpListenerContext" /> instance.
     /// </summary>
     public sealed class HttpListenerContextAdapter : IHttpListenerContext, IAdapter<HttpListenerContext>

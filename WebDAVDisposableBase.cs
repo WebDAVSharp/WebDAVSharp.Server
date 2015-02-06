@@ -21,9 +21,7 @@ namespace WebDAVSharp.Server
 
         /// <summary>
         ///     This method will ensure that the object has not been disposed of through a call
-        ///     to
-        ///     <see cref="Dispose()" />, and if it has, it will throw
-        ///     <see cref="ObjectDisposedException" />
+        ///     to <see cref="Dispose()" />, and if it has, it will throw <see cref="ObjectDisposedException" />
         /// </summary>
         /// <exception cref="System.ObjectDisposedException">The object has been disposed of.</exception>
         protected void EnsureNotDisposed()

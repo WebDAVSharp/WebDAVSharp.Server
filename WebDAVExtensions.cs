@@ -87,11 +87,8 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     Retrieves a store item through the specified
-        ///     <see cref="Uri" /> from the
-        ///     specified
-        ///     <see cref="WebDavServer" /> and
-        ///     <see cref="IWebDavStore" />.
+        ///     Retrieves a store item through the specified <see cref="Uri" /> from the specified
+        ///     <see cref="WebDavServer" /> and <see cref="IWebDavStore" />.
         /// </summary>
         /// <param name="uri">The <see cref="Uri" /> to retrieve the store item for.</param>
         /// <param name="server">The <see cref="WebDavServer" /> that hosts the <paramref name="store" />.</param>
@@ -112,8 +109,7 @@ namespace WebDAVSharp.Server
         /// </exception>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavNotFoundException">If the item was not found.</exception>
         /// <exception cref="WebDavConflictException">
-        ///     <paramref name="uri" /> refers to a document in a collection, where the
-        ///     collection does not exist.
+        ///     <paramref name="uri" /> refers to a document in a collection, where the collection does not exist.
         /// </exception>
         /// <exception cref="WebDavNotFoundException"><paramref name="uri" /> refers to a document that does not exist.</exception>
         public static IWebDavStoreItem GetItem(this Uri uri, WebDavServer server, IWebDavStore store)

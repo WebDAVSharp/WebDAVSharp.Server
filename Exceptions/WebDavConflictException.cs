@@ -16,10 +16,8 @@ namespace WebDAVSharp.Server.Exceptions
         /// </summary>
         /// <param name="message">The exception message stating the reason for the exception being thrown.</param>
         /// <param name="innerException">
-        ///     The
-        ///     <see cref="Exception" /> that is the cause for this exception;
-        ///     or
-        ///     <c>null</c> if no inner exception is specified.
+        ///     The <see cref="Exception" /> that is the cause for this exception;
+        ///     or <c>null</c> if no inner exception is specified.
         /// </param>
         public WebDavConflictException(string message = null, Exception innerException = null)
             : base(HttpStatusCode.Conflict, message, innerException)

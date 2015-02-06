@@ -8,12 +8,9 @@ using WebDAVSharp.Server.Stores.BaseClasses;
 namespace WebDAVSharp.Server.Stores.DiskStore
 {
     /// <summary>
-    ///     This class implements a disk-based
-    ///     <see cref="IWebDavStoreItem" /> which can be either
-    ///     a folder on disk (
-    ///     <see cref="WebDavDiskStoreCollection" />) or a file on disk
-    ///     (
-    ///     <see cref="WebDavDiskStoreDocument" />).
+    ///     This class implements a disk-based <see cref="IWebDavStoreItem" /> which can be either
+    ///     a folder on disk ( <see cref="WebDavDiskStoreCollection" />) or a file on disk
+    ///     ( <see cref="WebDavDiskStoreDocument" />).
     /// </summary>
     public class WebDavDiskStoreItem : WebDavStoreItemBase
     {
@@ -34,12 +31,8 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         ///     Initializes a new instance of the <see cref="WebDavDiskStoreItem" /> class.
         /// </summary>
         /// <param name="parentCollection">
-        ///     The parent
-        ///     <see cref="WebDavDiskStoreCollection" /> that contains this
-        ///     <see cref="WebDavDiskStoreItem" />;
-        ///     or
-        ///     <c>null</c> if this is the root
-        ///     <see cref="WebDavDiskStoreCollection" />.
+        ///     The parent <see cref="WebDavDiskStoreCollection" /> that contains this <see cref="WebDavDiskStoreItem" />;
+        ///     or <c>null</c> if this is the root <see cref="WebDavDiskStoreCollection" />.
         /// </param>
         /// <param name="path">The path that this <see cref="WebDavDiskStoreItem" /> maps to.</param>
         /// <exception cref="System.ArgumentNullException">path</exception>

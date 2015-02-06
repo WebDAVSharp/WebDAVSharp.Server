@@ -8,71 +8,63 @@ using System.Security.Principal;
 using WebDAVSharp.Server.Exceptions;
 
 namespace WebDAVSharp.Server.Stores.DiskStore
-    {
+{
     /// <summary>
     ///     This class implements a disk-based <see cref="IWebDavStore" /> that maps to a folder on disk.
     /// </summary>
     [DebuggerDisplay("Directory ({Name})")]
     public sealed class WebDavDiskStoreCollection : WebDavDiskStoreItem, IWebDavStoreCollection
-        {
+    {
         private readonly Dictionary<string, WeakReference> _items = new Dictionary<string, WeakReference>();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="WebDavDiskStoreCollection" /> class.
         /// </summary>
         /// <param name="parentCollection">
-        ///     The parent <see cref="WebDavDiskStoreCollection" /> that contains this
-        ///     <see cref="WebDavDiskStoreCollection" />.
+        ///     The parent <see cref="WebDavDiskStoreCollection" /> that contains this <see cref="WebDavDiskStoreCollection" />.
         /// </param>
         /// <param name="path">The path to the folder on this that this <see cref="WebDavDiskStoreCollection" /> maps to.</param>
         public WebDavDiskStoreCollection(WebDavDiskStoreCollection parentCollection, string path)
             : base(parentCollection, path)
-            {
-            }
+        {
+        }
 
         #region IWebDAVStoreCollection Members
-
-        
 
         /// <summary>
         ///     Gets a collection of all the items in this <see cref="IWebDavStoreCollection" />.
         /// </summary>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException">
-        ///     If the user is unauthorized or doesn't have
-        ///     access
+        ///     If the user is unauthorized or doesn't have access
         /// </exception>
         public IEnumerable<IWebDavStoreItem> Items
-            {
-            get
-                {
-                return BuildItems();
-                }
-            }
+        {
+            get { return BuildItems(); }
+        }
 
         /// <summary>
         ///     Retrieves a store item by its name.
         /// </summary>
         /// <param name="name">The name of the store item to retrieve.</param>
         /// <returns>
-        ///     The store item that has the specified
-        ///     <paramref name="name" />;
+        ///     The store item that has the specified <paramref name="name" />;
         ///     or
         ///     <c>null</c> if there is no store item with that name.
         /// </returns>
         public IWebDavStoreItem GetItemByName(string name)
-            {
+        {
             string path = Path.Combine(ItemPath, name);
 
             using (Identity.Impersonate())
-                {
+            {
                 if (File.Exists(path) && CanReadFile(path))
                     return new WebDavDiskStoreDocument(this, path);
                 if (Directory.Exists(path) && CanReadDirectory(path))
                     return new WebDavDiskStoreCollection(this, path);
-                }
+            }
 
             return null;
-            }
+        }
 
         /// <summary>
         ///     Creates a new collection with the specified name.
@@ -82,27 +74,26 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         ///     The created <see cref="IWebDavStoreCollection" /> instance.
         /// </returns>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException">
-        ///     When the user is unauthorized or has no
-        ///     access
+        ///     When the user is unauthorized or has no access
         /// </exception>
         public IWebDavStoreCollection CreateCollection(string name)
-            {
+        {
             string path = Path.Combine(ItemPath, name);
 
             try
-                {
+            {
                 // Impersonate the current user and make file changes
                 WindowsImpersonationContext wic = Identity.Impersonate();
                 Directory.CreateDirectory(path);
                 wic.Undo();
-                }
+            }
             catch
-                {
+            {
                 throw new WebDavUnauthorizedException();
-                }
+            }
 
             return GetItemByName(name) as IWebDavStoreCollection;
-            }
+        }
 
         /// <summary>
         ///     Deletes a store item by its name.
@@ -110,46 +101,45 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// <param name="item">The name of the store item to delete.</param>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavNotFoundException">If the item was not found.</exception>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException">
-        ///     If the user is unauthorized or has no
-        ///     access.
+        ///     If the user is unauthorized or has no access.
         /// </exception>
         public void Delete(IWebDavStoreItem item)
-            {
-            var diskItem = (WebDavDiskStoreItem)item;
+        {
+            var diskItem = (WebDavDiskStoreItem) item;
             string itemPath = diskItem.ItemPath;
             if (item is WebDavDiskStoreDocument)
-                {
+            {
                 if (!File.Exists(itemPath))
                     throw new WebDavNotFoundException();
                 try
-                    {
+                {
                     // Impersonate the current user and delete the file
                     WindowsImpersonationContext wic = Identity.Impersonate();
                     File.Delete(itemPath);
                     wic.Undo();
-                    }
-                catch
-                    {
-                    throw new WebDavUnauthorizedException();
-                    }
                 }
-            else
+                catch
                 {
+                    throw new WebDavUnauthorizedException();
+                }
+            }
+            else
+            {
                 if (!Directory.Exists(itemPath))
                     throw new WebDavNotFoundException();
                 try
-                    {
+                {
                     // Impersonate the current user and delete the directory
                     WindowsImpersonationContext wic = Identity.Impersonate();
                     Directory.Delete(diskItem.ItemPath);
                     wic.Undo();
-                    }
+                }
                 catch
-                    {
+                {
                     throw new WebDavUnauthorizedException();
-                    }
                 }
             }
+        }
 
         /// <summary>
         ///     Creates a new document with the specified name.
@@ -160,32 +150,31 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// </returns>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavConflictException">If the item already exists</exception>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException">
-        ///     If the user is unauthorized or has no
-        ///     access
+        ///     If the user is unauthorized or has no access
         /// </exception>
         public IWebDavStoreDocument CreateDocument(string name)
-            {
+        {
             string itemPath = Path.Combine(ItemPath, name);
             if (File.Exists(itemPath) || Directory.Exists(itemPath))
                 throw new WebDavConflictException();
 
             try
-                {
+            {
                 // Impersonate the current user and delete the directory
                 WindowsImpersonationContext wic = Identity.Impersonate();
                 File.Create(itemPath)
                     .Dispose();
                 wic.Undo();
-                }
+            }
             catch
-                {
+            {
                 throw new WebDavUnauthorizedException();
-                }
+            }
 
             var document = new WebDavDiskStoreDocument(this, itemPath);
             _items.Add(name, new WeakReference(document));
             return document;
-            }
+        }
 
         /// <summary>
         ///     Copies an existing store item into this collection, overwriting any existing items.
@@ -201,76 +190,73 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         ///     access
         /// </exception>
         public IWebDavStoreItem CopyItemHere(IWebDavStoreItem source, string destinationName, bool includeContent)
-            {
+        {
             // We get the path of
             string destinationItemPath = Path.Combine(ItemPath, destinationName);
 
             // the moving of the item
             if (source.IsCollection)
-                {
+            {
                 try
-                    {
+                {
                     // Impersonate the current user and move the directory
                     WindowsImpersonationContext wic = Identity.Impersonate();
                     DirectoryCopy(source.ItemPath, destinationItemPath, true);
                     wic.Undo();
-                    }
+                }
                 catch
-                    {
+                {
                     throw new WebDavUnauthorizedException();
-                    }
+                }
 
                 // We return the moved file as a WebDAVDiskStoreDocument
                 var collection = new WebDavDiskStoreCollection(this, destinationItemPath);
                 _items.Add(destinationName, new WeakReference(collection));
                 return collection;
-                }
+            }
             // We copy the file with an override.
             try
-                {
+            {
                 // Impersonate the current user and copy the file
                 WindowsImpersonationContext wic = Identity.Impersonate();
                 File.Copy(source.ItemPath, destinationItemPath, true);
                 wic.Undo();
-                }
+            }
             catch
-                {
+            {
                 throw new WebDavUnauthorizedException();
-                }
+            }
 
             // We return the moved file as a WebDAVDiskStoreDocument
             var document = new WebDavDiskStoreDocument(this, destinationItemPath);
             _items.Add(destinationName, new WeakReference(document));
             return document;
-            }
+        }
 
         /// <summary>
         ///     Moves an existing store item into this collection, overwriting any existing items.
         /// </summary>
         /// <param name="source">The store item to move.</param>
         /// <param name="destinationName">
-        ///     The
-        ///     <see cref="IWebDavStoreItem" /> that refers to the item that was moved,
-        ///     in its new location.
+        ///     The <see cref="IWebDavStoreItem" /> that refers to the item that was moved, in its new location.
         /// </param>
         /// <returns>
         ///     The moved <see cref="IWebDavStoreItem" /> instance.
         /// </returns>
         /// <exception cref="System.Exception">Path to the source item not defined.</exception>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException">
-        ///     If the user is unauthorized or has no
-        ///     access
+        ///     If the user is unauthorized or has no access
         /// </exception>
         /// <remarks>
         ///     Note that the method should fail without creating or overwriting content in the
         ///     target collection if the move cannot go through.
         /// </remarks>
         public IWebDavStoreItem MoveItemHere(IWebDavStoreItem source, string destinationName)
-            {
+        {
             // try to get the path of the source item
             string sourceItemPath = "";
 
-            var sourceItem = (WebDavDiskStoreItem)source;
+            var sourceItem = (WebDavDiskStoreItem) source;
             sourceItemPath = sourceItem.ItemPath;
 
             if (String.IsNullOrEmpty(sourceItemPath))
@@ -281,125 +267,125 @@ namespace WebDAVSharp.Server.Stores.DiskStore
 
             // the moving of the item
             if (source.IsCollection)
-                {
+            {
                 try
-                    {
+                {
                     // Impersonate the current user and move the directory
                     WindowsImpersonationContext wic = Identity.Impersonate();
                     Directory.Move(sourceItemPath, destinationItemPath);
                     wic.Undo();
-                    }
+                }
                 catch
-                    {
+                {
                     throw new WebDavUnauthorizedException();
-                    }
+                }
 
                 // We return the moved file as a WebDAVDiskStoreDocument
                 var collection = new WebDavDiskStoreCollection(this, destinationItemPath);
                 _items.Add(destinationName, new WeakReference(collection));
                 return collection;
-                }
-                {
+            }
+            {
                 // Impersonate the current user and move the file
                 WindowsImpersonationContext wic = Identity.Impersonate();
                 File.Move(sourceItemPath, destinationItemPath);
                 wic.Undo();
-                }
-
-                // We return the moved file as a WebDAVDiskStoreDocument
-                var document = new WebDavDiskStoreDocument(this, destinationItemPath);
-                _items.Add(destinationName, new WeakReference(document));
-                return document;
             }
 
+            // We return the moved file as a WebDAVDiskStoreDocument
+            var document = new WebDavDiskStoreDocument(this, destinationItemPath);
+            _items.Add(destinationName, new WeakReference(document));
+            return document;
+        }
+
         private IEnumerable<IWebDavStoreItem> BuildItems()
-            {
+        {
             var toDelete = new HashSet<WeakReference>(_items.Values);
             var items = new List<IWebDavStoreItem>();
 
             // TODO: Refactor to get rid of duplicate loop code
             var directories = new List<string>();
             try
-                {
+            {
                 // Impersonate the current user and get all the directories
                 using (Identity.Impersonate())
-                    {
+                {
                     foreach (string dirName in Directory.GetDirectories(ItemPath))
-                        {
+                    {
                         try
-                            {
+                        {
                             bool canread = CanReadDirectory(Path.Combine(ItemPath, dirName));
                             if (canread)
                                 directories.Add(dirName);
-                            }
+                        }
                         catch (Exception)
-                            {
+                        {
                             // do nothing
-                            }
                         }
                     }
                 }
+            }
             catch
-                {
+            {
                 throw new WebDavUnauthorizedException();
-                }
+            }
             foreach (string subDirectoryPath in directories)
-                {
+            {
                 string name = Path.GetFileName(subDirectoryPath);
                 WebDavDiskStoreCollection collection = null;
 
                 WeakReference wr;
                 if (_items.TryGetValue(name, out wr))
-                    {
+                {
                     collection = wr.Target as WebDavDiskStoreCollection;
                     if (collection == null)
                         toDelete.Remove(wr);
-                    }
+                }
 
                 if (collection == null)
-                    {
+                {
                     collection = new WebDavDiskStoreCollection(this, subDirectoryPath);
                     _items[name] = new WeakReference(collection);
-                    }
+                }
 
                 items.Add(collection);
-                }
+            }
             var files = new List<string>();
             try
-                {
+            {
                 // Impersonate the current user and get all the files
                 using (Identity.Impersonate())
-                    {
+                {
                     files.AddRange(Directory.GetFiles(ItemPath)
                         .Where(fileName => CanReadFile(Path.Combine(ItemPath, fileName))));
-                    }
                 }
+            }
             catch
-                {
+            {
                 throw new WebDavUnauthorizedException();
-                }
+            }
             foreach (string filePath in files)
-                {
+            {
                 string name = Path.GetFileName(filePath);
                 WebDavDiskStoreDocument document = null;
 
                 WeakReference wr;
                 if (_items.TryGetValue(name, out wr))
-                    {
+                {
                     document = wr.Target as WebDavDiskStoreDocument;
                     if (document == null)
                         toDelete.Remove(wr);
-                    }
+                }
 
                 if (document == null)
-                    {
+                {
                     document = new WebDavDiskStoreDocument(this, filePath);
                     _items[name] = new WeakReference(document);
-                    }
-                items.Add(document);
                 }
-            return items.ToArray();
+                items.Add(document);
             }
+            return items.ToArray();
+        }
 
         /// <summary>
         ///     Checks if the user has access to the path
@@ -409,11 +395,11 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         ///     True if access, false if not
         /// </returns>
         private bool CanRead(string path)
-            {
+        {
             if (File.Exists(path))
                 return CanReadFile(path);
             return Directory.Exists(path) && CanReadDirectory(path);
-            }
+        }
 
         /// <summary>
         ///     Checks if access to the file is granted.
@@ -425,18 +411,18 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// <remarks>
         ///     Source: <see href="http://stackoverflow.com/questions/17318585/check-if-file-can-be-read" />
         /// </remarks>
-        private bool CanReadFile(string path)
-            {
+        private static bool CanReadFile(string path)
+        {
             try
-                {
+            {
                 File.Open(path, FileMode.Open, FileAccess.Read).Dispose();
                 return true;
-                }
-            catch (Exception)
-                {
-                return false;
-                }
             }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         ///     Checks if access to the directory is granted.
@@ -448,31 +434,32 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// <remarks>
         ///     Source: <see href="http://stackoverflow.com/questions/11709862/check-if-directory-is-accessible-in-c" />
         /// </remarks>
-        private bool CanReadDirectory(string path)
-            {
+        private static bool CanReadDirectory(string path)
+        {
             bool readAllow = false;
             bool readDeny = false;
             DirectorySecurity accessControlList = Directory.GetAccessControl(path);
             if (accessControlList == null)
                 return false;
-            AuthorizationRuleCollection accessRules = accessControlList.GetAccessRules(true, true, typeof(SecurityIdentifier));
+            AuthorizationRuleCollection accessRules = accessControlList.GetAccessRules(true, true,
+                typeof (SecurityIdentifier));
 
             foreach (FileSystemAccessRule rule in accessRules.Cast<FileSystemAccessRule>()
                 .Where(rule => (FileSystemRights.Read & rule.FileSystemRights) == FileSystemRights.Read))
-                {
+            {
                 switch (rule.AccessControlType)
-                    {
+                {
                     case AccessControlType.Allow:
                         readAllow = true;
                         break;
                     case AccessControlType.Deny:
                         readDeny = true;
                         break;
-                    }
                 }
+            }
 
             return readAllow && !readDeny;
-            }
+        }
 
         /// <summary>
         ///     Directories the copy.
@@ -484,16 +471,17 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         ///     Source directory does not exist or could not be found:
         ///     + sourceDirName
         /// </exception>
-        private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
-            {
+        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        {
             // Get the subdirectories for the specified directory.
             var dir = new DirectoryInfo(sourceDirName);
             DirectoryInfo[] dirs = dir.GetDirectories();
 
             if (!dir.Exists)
-                {
-                throw new DirectoryNotFoundException("Source directory does not exist or could not be found: " + sourceDirName);
-                }
+            {
+                throw new DirectoryNotFoundException("Source directory does not exist or could not be found: " +
+                                                     sourceDirName);
+            }
 
             // If the destination directory doesn't exist, create it. 
             if (!Directory.Exists(destDirName))
@@ -505,18 +493,18 @@ namespace WebDAVSharp.Server.Stores.DiskStore
             // Get the files in the directory and copy them to the new location.
 
             foreach (FileInfo file in dir.GetFiles())
-                {
+            {
                 string temppath = Path.Combine(destDirName, file.Name);
                 file.CopyTo(temppath, false);
-                }
-
-            foreach (DirectoryInfo subdir in dirs)
-                {
-                string temppath = Path.Combine(destDirName, subdir.Name);
-                DirectoryCopy(subdir.FullName, temppath, copySubDirs);
-                }
             }
 
-        #endregion
+            foreach (DirectoryInfo subdir in dirs)
+            {
+                string temppath = Path.Combine(destDirName, subdir.Name);
+                DirectoryCopy(subdir.FullName, temppath, copySubDirs);
+            }
         }
+
+        #endregion
     }
+}

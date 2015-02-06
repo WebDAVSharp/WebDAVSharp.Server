@@ -39,9 +39,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// </summary>
         /// <param name="server">The <see cref="WebDavServer" /> through which the request came in from the client.</param>
         /// <param name="context">
-        ///     The
-        ///     <see cref="IHttpListenerContext" /> object containing both the request and response
-        ///     objects to use.
+        ///     The <see cref="IHttpListenerContext" /> object containing both the request and response objects to use.
         /// </param>
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
@@ -157,13 +155,16 @@ namespace WebDAVSharp.Server.MethodHandlers
             propstatElement.AppendChild(statusProperty.ToXmlElement(responseDoc));
 
             // The other propstat children
-            foreach (WebDavProperty property in from XmlNode child in propNode.ChildNodes where child.Name.ToLower()
-                .Contains("creationtime") || child.Name.ToLower()
-                    .Contains("fileattributes") || child.Name.ToLower()
-                        .Contains("lastaccesstime") || child.Name.ToLower()
-                            .Contains("lastmodifiedtime") let node = propNode.SelectSingleNode(child.Name, manager) select node != null
-                                ? new WebDavProperty(child.LocalName, "", node.NamespaceURI)
-                                : new WebDavProperty(child.LocalName, "", ""))
+            foreach (WebDavProperty property in from XmlNode child in propNode.ChildNodes
+                where child.Name.ToLower()
+                    .Contains("creationtime") || child.Name.ToLower()
+                        .Contains("fileattributes") || child.Name.ToLower()
+                            .Contains("lastaccesstime") || child.Name.ToLower()
+                                .Contains("lastmodifiedtime")
+                let node = propNode.SelectSingleNode(child.Name, manager)
+                select node != null
+                    ? new WebDavProperty(child.LocalName, "", node.NamespaceURI)
+                    : new WebDavProperty(child.LocalName, "", ""))
                 propstatElement.AppendChild(property.ToXmlElement(responseDoc));
 
             responseNode.AppendChild(propstatElement);
@@ -179,7 +180,8 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             // HttpStatusCode doesn't contain WebDav status codes, but HttpWorkerRequest can handle these WebDav status codes
             context.Response.StatusCode = (int) WebDavStatusCode.MultiStatus;
-            context.Response.StatusDescription = HttpWorkerRequest.GetStatusDescription((int) WebDavStatusCode.MultiStatus);
+            context.Response.StatusDescription =
+                HttpWorkerRequest.GetStatusDescription((int) WebDavStatusCode.MultiStatus);
 
             // set the headers of the response
             context.Response.ContentLength64 = responseBytes.Length;

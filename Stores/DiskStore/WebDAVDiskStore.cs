@@ -28,7 +28,6 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                 throw new DirectoryNotFoundException(rootPath);
 
             _rootPath = rootPath;
-            //_RootCollection = new WebDAVDiskStoreCollection(null, rootPath);
         }
 
         /// <summary>

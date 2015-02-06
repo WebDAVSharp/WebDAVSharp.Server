@@ -44,9 +44,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// </summary>
         /// <param name="server">The <see cref="WebDavServer" /> through which the request came in from the client.</param>
         /// <param name="context">
-        ///     The
-        ///     <see cref="IHttpListenerContext" /> object containing both the request and response
-        ///     objects to use.
+        ///     The <see cref="IHttpListenerContext" /> object containing both the request and response objects to use.
         /// </param>
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException"></exception>
@@ -126,8 +124,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         #region RetrieveInformation
 
         /// <summary>
-        ///     Get the URI to the location
-        ///     If no slash at the end of the URI, this method adds one
+        ///     Get the URI to the location If no slash at the end of the URI, this method adds one
         /// </summary>
         /// <param name="uri">The <see cref="string" /> that contains the URI</param>
         /// <returns>
@@ -139,10 +136,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        ///     Convert the given
-        ///     <see cref="IWebDavStoreItem" /> to a
-        ///     <see cref="List{T}" /> of
-        ///     <see cref="IWebDavStoreItem" />
+        ///     Convert the given <see cref="IWebDavStoreItem" /> to a <see cref="List{T}" /> of <see cref="IWebDavStoreItem" />
         ///     This list depends on the "Depth" header
         /// </summary>
         /// <param name="iWebDavStoreItem">The <see cref="IWebDavStoreItem" /> that needs to be converted</param>
@@ -186,10 +180,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        ///     Reads the XML body of the
-        ///     <see cref="IHttpListenerRequest" />
-        ///     and converts it to an
-        ///     <see cref="XmlDocument" />
+        ///     Reads the XML body of the <see cref="IHttpListenerRequest" /> and converts it to an <see cref="XmlDocument" />
         /// </summary>
         /// <param name="request">The <see cref="IHttpListenerRequest" /></param>
         /// <returns>
@@ -219,8 +210,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        ///     Adds the standard properties for an Propfind allprop request to a <see cref="List{T}" /> of
-        ///     <see cref="WebDavProperty" />
+        ///     Adds the standard properties for an Propfind allprop request to a <see cref="List{T}" /> of <see cref="WebDavProperty" />
         /// </summary>
         /// <returns>
         ///     The list with all the <see cref="WebDavProperty" />
@@ -417,7 +407,8 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             // HttpStatusCode doesn't contain WebDav status codes, but HttpWorkerRequest can handle these WebDav status codes
             context.Response.StatusCode = (int) WebDavStatusCode.MultiStatus;
-            context.Response.StatusDescription = HttpWorkerRequest.GetStatusDescription((int) WebDavStatusCode.MultiStatus);
+            context.Response.StatusDescription =
+                HttpWorkerRequest.GetStatusDescription((int) WebDavStatusCode.MultiStatus);
             context.Response.ContentLength64 = responseBytes.Length;
             context.Response.AdaptedInstance.ContentType = "text/xml";
             context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);

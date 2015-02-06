@@ -37,22 +37,17 @@ namespace WebDAVSharp.Server
         ///     Initializes a new instance of the <see cref="WebDavServer" /> class.
         /// </summary>
         /// <param name="store">
-        ///     The
-        ///     <see cref="IWebDavStore" /> store object that will provide
-        ///     collections and documents for this
+        ///     The <see cref="IWebDavStore" /> store object that will provide collections and documents for this
         ///     <see cref="WebDavServer" />.
         /// </param>
         /// <param name="listener">
         ///     The
-        ///     <see cref="IHttpListener" /> object that will handle the web server portion of
-        ///     the WebDAV server; or
+        ///     <see cref="IHttpListener" /> object that will handle the web server portion of the WebDAV server; or
         ///     <c>null</c> to use a fresh one.
         /// </param>
         /// <param name="methodHandlers">
-        ///     A collection of HTTP method handlers to use by this
-        ///     <see cref="WebDavServer" />;
-        ///     or
-        ///     <c>null</c> to use the built-in method handlers.
+        ///     A collection of HTTP method handlers to use by this <see cref="WebDavServer" />;
+        ///     or <c>null</c> to use the built-in method handlers.
         /// </param>
         /// <exception cref="System.ArgumentNullException">
         ///     <para>
@@ -106,10 +101,7 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     Gets the
-        ///     <see cref="IHttpListener" /> that this
-        ///     <see cref="WebDavServer" /> uses for
-        ///     the web server portion.
+        ///     Gets the <see cref="IHttpListener" /> that this <see cref="WebDavServer" /> uses for the web server portion.
         /// </summary>
         /// <value>
         ///     The listener.
@@ -150,13 +142,10 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     Starts this
-        ///     <see cref="WebDavServer" /> and returns once it has
-        ///     been started successfully.
+        ///     Starts this <see cref="WebDavServer" /> and returns once it has been started successfully.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">
-        ///     This WebDAVServer instance is already running, call to Start is
-        ///     invalid at this point
+        ///     This WebDAVServer instance is already running, call to Start is invalid at this point
         /// </exception>
         /// <exception cref="ObjectDisposedException">This <see cref="WebDavServer" /> instance has been disposed of.</exception>
         /// <exception cref="InvalidOperationException">The server is already running.</exception>
@@ -183,13 +172,10 @@ namespace WebDAVSharp.Server
         }
 
         /// <summary>
-        ///     Starts this
-        ///     <see cref="WebDavServer" /> and returns once it has
-        ///     been stopped successfully.
+        ///     Starts this <see cref="WebDavServer" /> and returns once it has been stopped successfully.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">
-        ///     This WebDAVServer instance is not running, call to Stop is invalid
-        ///     at this point
+        ///     This WebDAVServer instance is not running, call to Stop is invalid at this point
         /// </exception>
         /// <exception cref="ObjectDisposedException">This <see cref="WebDavServer" /> instance has been disposed of.</exception>
         /// <exception cref="InvalidOperationException">The server is not running.</exception>
@@ -271,7 +257,8 @@ namespace WebDAVSharp.Server
                     string method = context.Request.HttpMethod;
                     IWebDavMethodHandler methodHandler;
                     if (!_methodHandlers.TryGetValue(method, out methodHandler))
-                        throw new WebDavMethodNotAllowedException(string.Format(CultureInfo.InvariantCulture,"%s ({0})", context.Request.HttpMethod));
+                        throw new WebDavMethodNotAllowedException(string.Format(CultureInfo.InvariantCulture, "%s ({0})",
+                            context.Request.HttpMethod));
 
                     context.Response.AppendHeader("DAV", "1,2,1#extend");
 

@@ -4,9 +4,7 @@ namespace WebDAVSharp.Server.Stores
 {
     /// <summary>
     ///     This interface must be implemented by classes that will function as a store item,
-    ///     which is either a document (
-    ///     <see cref="IWebDavStoreDocument" />) or a
-    ///     collection of documents (
+    ///     which is either a document ( <see cref="IWebDavStoreDocument" />) or a collection of documents (
     ///     <see cref="IWebDavStoreCollection" />.)
     /// </summary>
     public interface IWebDavStoreItem

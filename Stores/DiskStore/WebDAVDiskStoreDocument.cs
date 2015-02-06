@@ -18,12 +18,8 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         ///     Initializes a new instance of the <see cref="WebDavDiskStoreDocument" /> class.
         /// </summary>
         /// <param name="parentCollection">
-        ///     The parent
-        ///     <see cref="WebDavDiskStoreCollection" /> that contains this
-        ///     <see cref="WebDavDiskStoreItem" />;
-        ///     or
-        ///     <c>null</c> if this is the root
-        ///     <see cref="WebDavDiskStoreCollection" />.
+        ///     The parent <see cref="WebDavDiskStoreCollection" /> that contains this <see cref="WebDavDiskStoreItem" />;
+        ///     or <c>null</c> if this is the root <see cref="WebDavDiskStoreCollection" />.
         /// </param>
         /// <param name="path">The path that this <see cref="WebDavDiskStoreItem" /> maps to.</param>
         /// <exception cref="ArgumentNullException"><paramref name="path" /> is <c>null</c> or empty.</exception>
@@ -40,10 +36,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// </summary>
         public long Size
         {
-            get
-            {
-                return new FileInfo(ItemPath).Length;
-            }
+            get { return new FileInfo(ItemPath).Length; }
         }
 
         /// <summary>
@@ -80,8 +73,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         ///     The <see cref="Stream" /> object that can be read from.
         /// </returns>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException">
-        ///     If the user is unauthorized or has no
-        ///     access
+        ///     If the user is unauthorized or has no access
         /// </exception>
         public Stream OpenReadStream()
         {
@@ -105,15 +97,13 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// </summary>
         /// <param name="append">
         ///     A value indicating whether to append to the existing document;
-        ///     if
-        ///     <c>false</c>, the existing content will be dropped.
+        ///     if <c>false</c>, the existing content will be dropped.
         /// </param>
         /// <returns>
         ///     The <see cref="Stream" /> object that can be written to.
         /// </returns>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException">
-        ///     If the user is unauthorized or has no
-        ///     access
+        ///     If the user is unauthorized or has no access
         /// </exception>
         public Stream OpenWriteStream(bool append)
         {

@@ -20,8 +20,7 @@ namespace WebDAVSharp.Server.Stores
         /// </summary>
         /// <param name="name">The name of the store item to retrieve.</param>
         /// <returns>
-        ///     The store item that has the specified
-        ///     <paramref name="name" />;
+        ///     The store item that has the specified <paramref name="name" />;
         ///     or
         ///     <c>null</c> if there is no store item with that name.
         /// </returns>
@@ -67,8 +66,7 @@ namespace WebDAVSharp.Server.Stores
         /// </summary>
         /// <param name="source">The store item to move.</param>
         /// <param name="destinationName">
-        ///     The
-        ///     <see cref="IWebDavStoreItem" /> that refers to the item that was moved,
+        ///     The <see cref="IWebDavStoreItem" /> that refers to the item that was moved,
         ///     in its new location.
         /// </param>
         /// <returns>

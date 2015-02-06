@@ -36,10 +36,8 @@ namespace WebDAVSharp.Server.Adapters
         ///     <c>null</c>.
         /// </param>
         /// <returns>
-        ///     A
-        ///     <see cref="IHttpListenerContext" /> adapter object for a request;
-        ///     or
-        ///     <c>null</c> if the wait for a request was aborted due to
+        ///     A <see cref="IHttpListenerContext" /> adapter object for a request;
+        ///     or <c>null</c> if the wait for a request was aborted due to
         ///     <paramref name="abortEvent" /> being set.
         /// </returns>
         /// <exception cref="System.ArgumentNullException">abortEvent</exception>
@@ -68,10 +66,8 @@ namespace WebDAVSharp.Server.Adapters
         }
 
         /// <summary>
-        ///     Gets the Uniform Resource Identifier (
-        ///     <see cref="Uri" />) prefixes handled by the
-        ///     adapted
-        ///     <see cref="HttpListener" /> object.
+        ///     Gets the Uniform Resource Identifier (<see cref="Uri" />) prefixes handled by the
+        ///     adapted <see cref="HttpListener" /> object.
         /// </summary>
         public HttpListenerPrefixCollection Prefixes
         {

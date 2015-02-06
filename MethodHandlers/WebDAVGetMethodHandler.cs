@@ -34,9 +34,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// </summary>
         /// <param name="server">The <see cref="WebDavServer" /> through which the request came in from the client.</param>
         /// <param name="context">
-        ///     The
-        ///     <see cref="IHttpListenerContext" /> object containing both the request and response
-        ///     objects to use.
+        ///     The <see cref="IHttpListenerContext" /> object containing both the request and response objects to use.
         /// </param>
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavNotFoundException"></exception>

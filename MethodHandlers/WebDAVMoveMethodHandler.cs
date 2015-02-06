@@ -35,9 +35,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// </summary>
         /// <param name="server">The <see cref="WebDavServer" /> through which the request came in from the client.</param>
         /// <param name="context">
-        ///     The
-        ///     <see cref="IHttpListenerContext" /> object containing both the request and response
-        ///     objects to use.
+        ///     The <see cref="IHttpListenerContext" /> object containing both the request and response objects to use.
         /// </param>
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
@@ -52,15 +50,12 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// </summary>
         /// <param name="server">The <see cref="WebDavServer" /> through which the request came in from the client.</param>
         /// <param name="context">
-        ///     The
-        ///     <see cref="IHttpListenerContext" /> object containing both the request and response
-        ///     objects to use.
+        ///     The <see cref="IHttpListenerContext" /> object containing both the request and response objects to use.
         /// </param>
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         /// <param name="sourceWebDavStoreItem">The <see cref="IWebDavStoreItem" /> that will be moved</param>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavForbiddenException">
-        ///     If the source path is the same as the
-        ///     destination path
+        ///     If the source path is the same as the destination path
         /// </exception>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavPreconditionFailedException">If one of the preconditions failed</exception>
         private void MoveItem(WebDavServer server, IHttpListenerContext context, IWebDavStore store,
