@@ -62,10 +62,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
-      <HintPath>C:\Users\geev\Desktop\Example-master\packages\Common.Logging.2.2.0\lib\net40\Common.Logging.dll</HintPath>
+      <HintPath>packages\Common.Logging.2.2.0\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging.Core">
-      <HintPath>C:\Users\geev\Desktop\Example-master\packages\Common.Logging.Core.2.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
+      <HintPath>packages\Common.Logging.Core.2.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
