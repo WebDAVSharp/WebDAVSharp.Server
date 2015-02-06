@@ -3,7 +3,7 @@
     /// <summary>
     /// The property with all the information of a lock
     /// </summary>
-    class LockProperty
+   internal class LockProperty
     {
         public string Locktype { get; set; }
         public string Lockscope { get; set; }

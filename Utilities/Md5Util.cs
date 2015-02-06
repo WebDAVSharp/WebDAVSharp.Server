@@ -10,7 +10,7 @@ namespace WebDAVSharp.Server.Utilities
     /// <remarks>
     /// Source: <see href="https://gist.github.com/kristopherjohnson/3021045" />
     /// </remarks>
-    public static class Md5Util
+    internal static class Md5Util
     {
         /// <summary>
         /// Compute hash for string encoded as UTF8

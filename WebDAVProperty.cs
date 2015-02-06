@@ -5,7 +5,7 @@ namespace WebDAVSharp.Server
     /// <summary>
     /// This class implements the core WebDAV server.
     /// </summary>
-    public class WebDavProperty
+    internal class WebDavProperty
     {
         /// <summary>
         /// This class implements the core WebDAV server.
