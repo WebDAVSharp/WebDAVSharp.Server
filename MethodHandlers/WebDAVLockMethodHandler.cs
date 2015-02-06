@@ -111,8 +111,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
             catch (Exception)
             {
-                collection.CreateDocument(context.Request.Url.Segments.Last()
-                    .TrimEnd('/', '\\'));
+                collection.CreateDocument(context.Request.Url.Segments.Last().TrimEnd('/', '\\'));
                 isNew = true;
             }
 

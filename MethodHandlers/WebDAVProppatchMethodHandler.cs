@@ -63,7 +63,7 @@ namespace WebDAVSharp.Server.MethodHandlers
                 var reader = new StreamReader(context.Request.InputStream, Encoding.UTF8);
                 string requestBody = reader.ReadToEnd();
 
-                if (!requestBody.Equals(""))
+                if (!String.IsNullOrEmpty(requestBody))
                 {
                     var requestDocument = new XmlDocument();
                     requestDocument.LoadXml(requestBody);

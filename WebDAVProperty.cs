@@ -27,9 +27,9 @@ namespace WebDAVSharp.Server
         /// </summary>
         public WebDavProperty()
         {
-            Namespace = "";
-            Name = "";
-            Value = "";
+            Namespace = string.Empty;
+            Name = string.Empty;
+            Value = string.Empty;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace WebDAVSharp.Server
         public WebDavProperty(string name)
         {
             Name = name;
-            Value = "";
+            Value = string.Empty;
             Namespace = "DAV:";
         }
 

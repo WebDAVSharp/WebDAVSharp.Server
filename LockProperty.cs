@@ -10,12 +10,12 @@
         /// </summary>
         public LockProperty()
         {
-            Locktype = "";
-            Lockscope = "";
-            Depth = "";
-            Owner = "";
-            Timeout = "";
-            Locktoken = "";
+            Locktype = string.Empty;
+            Lockscope = string.Empty;
+            Depth = string.Empty;
+            Owner = string.Empty;
+            Timeout = string.Empty;
+            Locktoken = string.Empty;
         }
 
         /// <summary>

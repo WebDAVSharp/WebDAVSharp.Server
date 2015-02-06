@@ -194,7 +194,7 @@ namespace WebDAVSharp.Server.MethodHandlers
                 string requestBody = reader.ReadToEnd();
                 reader.Close();
 
-                if (!requestBody.Equals(""))
+                if (!String.IsNullOrEmpty(requestBody))
                 {
                     var xmlDocument = new XmlDocument();
                     xmlDocument.LoadXml(requestBody);
@@ -328,7 +328,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             // If Propfind request contains a propname element
             if (isPropname)
             {
-                webDavProperty.Value = "";
+                webDavProperty.Value = String.Empty;
                 return webDavProperty.ToXmlElement(xmlDocument);
             }
             // If not, add the values to webDavProperty
@@ -359,13 +359,12 @@ namespace WebDAVSharp.Server.MethodHandlers
             switch (davProperty.Name)
             {
                 case "creationdate":
-                    return webDavStoreItem.CreationDate.ToUniversalTime()
-                        .ToString("s") + "Z";
+                    return webDavStoreItem.CreationDate.ToUniversalTime().ToString("s") + "Z";
                 case "displayname":
                     return webDavStoreItem.Name;
                 case "getcontentlanguage":
                     // still to implement !!!
-                    return "";
+                    return String.Empty;
                 case "getcontentlength":
                     return (!webDavStoreItem.IsCollection ? "" + ((IWebDavStoreDocument) webDavStoreItem).Size : "");
                 case "getcontenttype":
@@ -373,11 +372,10 @@ namespace WebDAVSharp.Server.MethodHandlers
                 case "getetag":
                     return (!webDavStoreItem.IsCollection ? "" + ((IWebDavStoreDocument) webDavStoreItem).Etag : "");
                 case "getlastmodified":
-                    return webDavStoreItem.ModificationDate.ToUniversalTime()
-                        .ToString("R");
+                    return webDavStoreItem.ModificationDate.ToUniversalTime().ToString("R");
                 case "lockdiscovery":
                     // still to implement !!!
-                    return "";
+                    return String.Empty;
                 case "resourcetype":
                     return "";
                 case "supportedlock":
@@ -387,7 +385,7 @@ namespace WebDAVSharp.Server.MethodHandlers
                 case "ishidden":
                     return "" + webDavStoreItem.Hidden;
                 default:
-                    return "";
+                    return String.Empty;
             }
         }
 
@@ -400,7 +398,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// </summary>
         /// <param name="context">The <see cref="IHttpListenerContext" /> containing the response</param>
         /// <param name="responseDocument">The <see cref="XmlDocument" /> containing the response body</param>
-        private void SendResponse(IHttpListenerContext context, XmlDocument responseDocument)
+        private static void SendResponse(IHttpListenerContext context, XmlDocument responseDocument)
         {
             // convert the XmlDocument
             byte[] responseBytes = Encoding.UTF8.GetBytes(responseDocument.InnerXml);

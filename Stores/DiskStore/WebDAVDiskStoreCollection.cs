@@ -318,7 +318,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                             if (canread)
                                 directories.Add(dirName);
                         }
-                        catch (Exception)
+                        catch (Exception )
                         {
                             // do nothing
                         }
@@ -441,8 +441,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
             DirectorySecurity accessControlList = Directory.GetAccessControl(path);
             if (accessControlList == null)
                 return false;
-            AuthorizationRuleCollection accessRules = accessControlList.GetAccessRules(true, true,
-                typeof (SecurityIdentifier));
+            AuthorizationRuleCollection accessRules = accessControlList.GetAccessRules(true, true, typeof (SecurityIdentifier));
 
             foreach (FileSystemAccessRule rule in accessRules.Cast<FileSystemAccessRule>()
                 .Where(rule => (FileSystemRights.Read & rule.FileSystemRights) == FileSystemRights.Read))

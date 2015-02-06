@@ -80,7 +80,7 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
         /// </summary>
         public virtual string ItemPath
         {
-            get { return ""; }
+            get { return String.Empty; }
         }
 
         /// <summary>
