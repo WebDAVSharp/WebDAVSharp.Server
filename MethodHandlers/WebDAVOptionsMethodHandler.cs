@@ -7,7 +7,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     ///     This class implements the <c>OPTIONS</c> HTTP method for WebDAV#.
     /// </summary>
-    public class WebDavOptionsMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavOptionsMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         /// <summary>
         ///     Gets the collection of the names of the HTTP methods handled by this instance.

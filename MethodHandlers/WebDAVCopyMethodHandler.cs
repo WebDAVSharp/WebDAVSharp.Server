@@ -11,7 +11,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     ///     This class implements the <c>COPY</c> HTTP method for WebDAV#.
     /// </summary>
-    public class WebDavCopyMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavCopyMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         /// <summary>
         ///     Gets the collection of the names of the HTTP methods handled by this instance.

@@ -12,7 +12,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     ///     This class implements the <c>PUT</c> HTTP method for WebDAV#.
     /// </summary>
-    public class WebDavPutMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavPutMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         /// <summary>
         ///     Gets the collection of the names of the HTTP methods handled by this instance.

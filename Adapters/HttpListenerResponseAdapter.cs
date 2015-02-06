@@ -9,7 +9,7 @@ namespace WebDAVSharp.Server.Adapters
     ///     This <see cref="IHttpListenerResponse" /> implementation wraps around a
     ///     <see cref="HttpListenerResponse" /> instance.
     /// </summary>
-    public sealed class HttpListenerResponseAdapter : IHttpListenerResponse
+    internal sealed class HttpListenerResponseAdapter : IHttpListenerResponse
     {
         private readonly HttpListenerResponse _response;
 

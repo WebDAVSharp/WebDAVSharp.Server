@@ -15,7 +15,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     ///     This class implements the <c>PROPFIND</c> HTTP method for WebDAV#.
     /// </summary>
-    public class WebDavPropfindMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavPropfindMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         private ILog _log;
         private Uri _requestUri;

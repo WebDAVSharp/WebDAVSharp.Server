@@ -11,7 +11,7 @@ namespace WebDAVSharp.Server
     /// <summary>
     ///     This class holds extension methods for various types related to WebDAV#.
     /// </summary>
-    public static class WebDavExtensions
+    internal static class WebDavExtensions
     {
         /// <summary>
         ///     Gets the Uri to the parent object.

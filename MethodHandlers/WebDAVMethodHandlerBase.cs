@@ -9,7 +9,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     ///     This is the base class for <see cref="IWebDavMethodHandler" /> implementations.
     /// </summary>
-    public abstract class WebDavMethodHandlerBase
+    internal abstract class WebDavMethodHandlerBase
         {
         private const int DepthInfinity = -1;
 
@@ -137,7 +137,7 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             // check if the string is valid or not infinity
             // if so, try to parse it to an int
-            if (timeout != null && !timeout.Equals("") && !timeout.Equals("infinity") &&
+            if (!String.IsNullOrEmpty(timeout) && !timeout.Equals("infinity") &&
                 !timeout.Equals("Infinite, Second-4100000000"))
                 return timeout;
             // else, return the timeout value as if it was requested to be 4 days

@@ -8,7 +8,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     ///     This class contains code to produce the built-in
     ///     <see cref="IWebDavMethodHandler" /> instances known by WebDAV#.
     /// </summary>
-    public static class WebDavMethodHandlers
+    internal static class WebDavMethodHandlers
     {
         private static readonly List<IWebDavMethodHandler> _BuiltIn = new List<IWebDavMethodHandler>();
 

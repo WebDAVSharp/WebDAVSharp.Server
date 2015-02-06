@@ -11,7 +11,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     ///     This class implements the <c>MOVE</c> HTTP method for WebDAV#.
     /// </summary>
-    public class WebDavMoveMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavMoveMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         /// <summary>
         ///     Gets the collection of the names of the HTTP methods handled by this instance.

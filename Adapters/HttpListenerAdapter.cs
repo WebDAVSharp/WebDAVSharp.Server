@@ -9,14 +9,14 @@ namespace WebDAVSharp.Server.Adapters
     ///     <see cref="IHttpListener" /> implementation wraps around a
     ///     <see cref="HttpListener" /> instance.
     /// </summary>
-    public sealed class HttpListenerAdapter : WebDavDisposableBase, IHttpListener, IAdapter<HttpListener>
+    internal sealed class HttpListenerAdapter : WebDavDisposableBase, IHttpListener, IAdapter<HttpListener>
     {
         private readonly HttpListener _listener;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="HttpListenerAdapter" /> class.
         /// </summary>
-        public HttpListenerAdapter()
+        internal HttpListenerAdapter()
         {
             _listener = new HttpListener
             {

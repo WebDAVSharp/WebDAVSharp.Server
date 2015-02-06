@@ -10,7 +10,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     ///     This class implements the <c>PROPFIND</c> HTTP method for WebDAV#.
     /// </summary>
-    public class WebDavHeadMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavHeadMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         /// <summary>
         ///     Gets the collection of the names of the HTTP methods handled by this instance.
