@@ -156,12 +156,8 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             //IWebDavStoreCollection
             // if the item is a collection
-<<<<<<< HEAD
-            if (typeof(IWebDavStoreCollection).IsAssignableFrom(iWebDavStoreItem.GetType()))
-=======
             IWebDavStoreCollection collection = iWebDavStoreItem as IWebDavStoreCollection;
             if (collection != null)
->>>>>>> pr/4
             {
                 list.Add(collection);
                 if (depth == 0)
@@ -179,17 +175,13 @@ namespace WebDAVSharp.Server.MethodHandlers
                 }
                 return list;
             }
-            // if the item is a document
-<<<<<<< HEAD
-            else if (typeof(IWebDavStoreDocument).IsAssignableFrom(iWebDavStoreItem.GetType()))
-            {
-                list.Add(iWebDavStoreItem);
-=======
->>>>>>> pr/4
-
+            // if the item is not a document, throw conflict exception
             if (!(iWebDavStoreItem is IWebDavStoreDocument))
                 throw new WebDavConflictException();
+
+            // add the item to the list
             list.Add(iWebDavStoreItem);
+
             return list;
         }
 
