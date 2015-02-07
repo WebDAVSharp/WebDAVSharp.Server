@@ -1,10 +1,9 @@
-﻿
-namespace WebDAVSharp.Server
+﻿namespace WebDAVSharp.Server
 {
     /// <summary>
     /// The property with all the information of a lock
     /// </summary>
-    class LockProperty
+   internal class LockProperty
     {
         public string Locktype { get; set; }
         public string Lockscope { get; set; }
@@ -18,12 +17,12 @@ namespace WebDAVSharp.Server
         /// </summary>
         public LockProperty()
         {
-            Locktype = "";
-            Lockscope = "";
-            Depth = "";
-            Owner = "";
-            Timeout = "";
-            Locktoken = "";
+            Locktype = string.Empty;
+            Lockscope = string.Empty;
+            Depth = string.Empty;
+            Owner = string.Empty;
+            Timeout = string.Empty;
+            Locktoken = string.Empty;
         }
 
         /// <summary>

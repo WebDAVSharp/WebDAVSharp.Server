@@ -10,7 +10,7 @@ namespace WebDAVSharp.Server.Adapters
     /// <see cref="IHttpListenerResponse" /> implementation wraps around a
     /// <see cref="HttpListenerResponse" /> instance.
     /// </summary>
-    public sealed class HttpListenerResponseAdapter : IHttpListenerResponse
+    internal sealed class HttpListenerResponseAdapter : IHttpListenerResponse
     {
         private readonly HttpListenerResponse _response;
 
@@ -22,10 +22,10 @@ namespace WebDAVSharp.Server.Adapters
         /// <exception cref="ArgumentNullException"><paramref name="Response" /> is <c>null</c>.</exception>
         public HttpListenerResponseAdapter(HttpListenerResponse Response)
         {
-            if (Response == null)
-                throw new ArgumentNullException("Response");
+        if (Response == null)
+            throw new ArgumentNullException("Response");
 
-            _response = Response;
+        _response = Response;
         }
 
         /// <summary>

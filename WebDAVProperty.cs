@@ -5,7 +5,7 @@ namespace WebDAVSharp.Server
     /// <summary>
     /// This class implements the core WebDAV server.
     /// </summary>
-    public class WebDavProperty
+    internal class WebDavProperty
     {
         /// <summary>
         /// This class implements the core WebDAV server.
@@ -27,9 +27,9 @@ namespace WebDAVSharp.Server
         /// </summary>
         public WebDavProperty()
         {
-            Namespace = "";
-            Name = "";
-            Value = "";
+            Namespace = string.Empty;
+            Name = string.Empty;
+            Value = string.Empty;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace WebDAVSharp.Server
         public WebDavProperty(string name)
         {
             Name = name;
-            Value = "";
+            Value = string.Empty;
             Namespace = "DAV:";
         }
 
@@ -87,8 +87,7 @@ namespace WebDAVSharp.Server
         {
             if (Namespace == "DAV:")
                 return "<D:" + Name + ">";
-            else
-                return "<" + Name + " xmlns=\"" + Namespace + "\">";
+            return "<" + Name + " xmlns=\"" + Namespace + "\">";
         }
 
         /// <summary>
@@ -99,8 +98,7 @@ namespace WebDAVSharp.Server
         {
             if (Namespace == "DAV:")
                 return "<D:" + Name + "/>";
-            else
-                return "<" + Name + " xmlns=\"" + Namespace + "\"/>";
+            return "<" + Name + " xmlns=\"" + Namespace + "\"/>";
         }
 
         /// <summary>
@@ -111,8 +109,7 @@ namespace WebDAVSharp.Server
         {
             if (Namespace == "DAV:")
                 return "</D:" + Name + ">";
-            else
-                return "</" + Name + ">";
+            return "</" + Name + ">";
         }
 
         /// <summary>
@@ -139,21 +136,15 @@ namespace WebDAVSharp.Server
         public XmlElement ToXmlElement(XmlDocument doc)
         {
             // if the DocumentElement is not null, return the XmlElement with namespace
-            if (doc.DocumentElement != null)
-            {
-                // Get the prefix of the namespace
-                string prefix = doc.DocumentElement.GetPrefixOfNamespace(Namespace);
+            if (doc.DocumentElement == null) return doc.CreateElement(Name);
+            // Get the prefix of the namespace
+            string prefix = doc.DocumentElement.GetPrefixOfNamespace(Namespace);
 
-                // Create the element
-                XmlElement element = doc.CreateElement(prefix, Name, Namespace);
-                element.InnerText = Value;
-                return element;
-            }
+            // Create the element
+            XmlElement element = doc.CreateElement(prefix, Name, Namespace);
+            element.InnerText = Value;
+            return element;
             // else, return XmlElement without namespace
-            else
-            {
-                return doc.CreateElement(Name);
-            }
         }
     }
 }

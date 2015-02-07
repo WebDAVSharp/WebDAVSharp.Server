@@ -1,5 +1,4 @@
-﻿using Common.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Xml;
+using Common.Logging;
 using WebDAVSharp.Server.Adapters;
 using WebDAVSharp.Server.Exceptions;
 using WebDAVSharp.Server.Stores;
@@ -16,7 +16,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     /// This class implements the <c>LOCK</c> HTTP method for WebDAV#.
     /// </summary>
-    class WebDavLockMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavLockMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         /// <summary>
         /// Gets the collection of the names of the HTTP methods handled by this instance.
@@ -71,7 +71,7 @@ namespace WebDAVSharp.Server.MethodHandlers
                     XmlDocument requestDocument = new XmlDocument();
                     requestDocument.LoadXml(requestBody);
 
-                    if (requestDocument.DocumentElement.LocalName != "prop" &&
+                    if (requestDocument.DocumentElement != null && requestDocument.DocumentElement.LocalName != "prop" &&
                         requestDocument.DocumentElement.LocalName != "lockinfo")
                     {
                         log.Debug("LOCK method without prop or lockinfo element in xml document");

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using WebDAVSharp.Server.Adapters;
@@ -11,7 +12,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     /// This class implements the <c>PUT</c> HTTP method for WebDAV#.
     /// </summary>
-    public class WebDavPutMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavPutMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         /// <summary>
         /// Gets the collection of the names of the HTTP methods handled by this instance.
@@ -48,7 +49,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             // Gets the item name from the url
             string itemName = Uri.UnescapeDataString(context.Request.Url.Segments.Last().TrimEnd('/', '\\'));
 
-            var item = parentCollection.GetItemByName(itemName);
+            IWebDavStoreItem item = parentCollection.GetItemByName(itemName);
             IWebDavStoreDocument doc;
             if (item != null)
             {
@@ -64,7 +65,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             if (context.Request.ContentLength64 < 0)
                 throw new WebDavLengthRequiredException();
 
-            using (var stream = doc.OpenWriteStream(false))
+            using (Stream stream = doc.OpenWriteStream(false))
             {
                 long left = context.Request.ContentLength64;
                 byte[] buffer = new byte[4096];

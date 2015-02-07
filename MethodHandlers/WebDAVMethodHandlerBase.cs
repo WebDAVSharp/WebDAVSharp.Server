@@ -9,8 +9,8 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     /// This is the base class for <see cref="IWebDavMethodHandler" /> implementations.
     /// </summary>
-    public abstract class WebDavMethodHandlerBase
-    {
+    internal abstract class WebDavMethodHandlerBase
+        {
         private const int DepthInfinity = -1;
 
         /// <summary>
@@ -98,17 +98,13 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             // check if the string is valid or not infinity
             // if so, try to parse it to an int
-            if (depth != null && !depth.Equals("") && !depth.Equals("infinity"))
-            {
-                int value;
-                if (int.TryParse(depth, out value))
-                {
-                    if (value == 0 || value == 1)
-                    {
-                        return value;
-                    }
-                }
-            }
+            if (String.IsNullOrEmpty(depth) || depth.Equals("infinity"))
+                return DepthInfinity;
+            int value;
+            if (!int.TryParse(depth, out value))
+                return DepthInfinity;
+            if (value == 0 || value == 1)
+                return value;
             // else, return the infinity value
             return DepthInfinity;
         }
@@ -124,12 +120,8 @@ namespace WebDAVSharp.Server.MethodHandlers
             string overwrite = request.Headers["Overwrite"];
 
             // check if the string is valid and if it equals T
-            if (overwrite != null && overwrite.Equals("T"))
-            {
-                return true;
-            }
+            return overwrite != null && overwrite.Equals("T");
             // else, return false
-            return false;
         }
 
         /// <summary>
@@ -144,10 +136,9 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             // check if the string is valid or not infinity
             // if so, try to parse it to an int
-            if (timeout != null && !timeout.Equals("") && !timeout.Equals("infinity") && !timeout.Equals("Infinite, Second-4100000000"))
-            {
+            if (!String.IsNullOrEmpty(timeout) && !timeout.Equals("infinity") &&
+                !timeout.Equals("Infinite, Second-4100000000"))
                 return timeout;
-            }
             // else, return the timeout value as if it was requested to be 4 days
             return "Second-345600";
         }
@@ -163,10 +154,8 @@ namespace WebDAVSharp.Server.MethodHandlers
             string destinationUri = request.Headers["Destination"];
 
             // check if the string is valid 
-            if (destinationUri != null && !destinationUri.Equals(""))
-            {
+            if (!String.IsNullOrEmpty(destinationUri))
                 return new Uri(destinationUri);
-            }
             // else, throw exception
             throw new WebDavConflictException();
         }

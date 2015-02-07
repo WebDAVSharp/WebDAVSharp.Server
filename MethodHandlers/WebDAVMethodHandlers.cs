@@ -8,7 +8,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// This class contains code to produce the built-in
     /// <see cref="IWebDavMethodHandler"/> instances known by WebDAV#.
     /// </summary>
-    public static class WebDavMethodHandlers
+    internal static class WebDavMethodHandlers
     {
         private static readonly List<IWebDavMethodHandler> _BuiltIn = new List<IWebDavMethodHandler>();
 
@@ -36,13 +36,12 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// </summary>
         private static void ScanAssemblies()
         {
-            var methodHandlerTypes =
-                from type in typeof(WebDavServer).Assembly.GetTypes()
+            IEnumerable<Type> methodHandlerTypes = from type in typeof (WebDavServer).Assembly.GetTypes()
                 where !type.IsAbstract
                 where typeof(IWebDavMethodHandler).IsAssignableFrom(type)
                 select type;
 
-            var methodHandlerInstances =
+            IEnumerable<IWebDavMethodHandler> methodHandlerInstances =
                 from type in methodHandlerTypes
                 select (IWebDavMethodHandler)Activator.CreateInstance(type);
 

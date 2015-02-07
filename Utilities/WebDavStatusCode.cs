@@ -3,7 +3,7 @@
     /// <summary>
     /// Contains the values of status codes defined for Http (WebDav).
     /// </summary>
-    public enum WebDavStatusCode
+    internal enum WebDavStatusCode
     {
         /// <summary>
         /// Equivalent to Http status 207 (WebDav).

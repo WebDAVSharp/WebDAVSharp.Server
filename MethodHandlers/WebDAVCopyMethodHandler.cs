@@ -11,7 +11,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     /// This class implements the <c>COPY</c> HTTP method for WebDAV#.
     /// </summary>
-    public class WebDavCopyMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavCopyMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         /// <summary>
         /// Gets the collection of the names of the HTTP methods handled by this instance.
@@ -57,10 +57,11 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <param name="source">The source.</param>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavForbiddenException"></exception>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavPreconditionFailedException"></exception>
-        private void CopyItem(WebDavServer server, IHttpListenerContext context, IWebDavStore store, IWebDavStoreItem source)
+        private static void CopyItem(WebDavServer server, IHttpListenerContext context, IWebDavStore store,
+            IWebDavStoreItem source)
         {
-            var destinationUri = GetDestinationHeader(context.Request);
-            var destinationParentCollection = GetParentCollection(server, store, destinationUri);
+            Uri destinationUri = GetDestinationHeader(context.Request);
+            IWebDavStoreCollection destinationParentCollection = GetParentCollection(server, store, destinationUri);
 
             bool copyContent = (GetDepthHeader(context.Request) != 0);
             bool isNew = true;
@@ -81,10 +82,7 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             destinationParentCollection.CopyItemHere(source, destinationName, copyContent);
 
-            if (isNew)
-                context.SendSimpleResponse(HttpStatusCode.Created);
-            else
-                context.SendSimpleResponse(HttpStatusCode.NoContent);
+            context.SendSimpleResponse(isNew ? HttpStatusCode.Created : HttpStatusCode.NoContent);
         }
     }
 }

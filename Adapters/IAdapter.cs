@@ -5,7 +5,7 @@
     /// project, to facilitate access to the underlying adapted object.
     /// </summary>
     /// <typeparam name="T">The type of internal instance that is adapted.</typeparam>
-    public interface IAdapter<T>
+    public  interface IAdapter<out T>
     {
         /// <summary>
         /// Gets the internal instance that was adapted for WebDAV#.

@@ -9,18 +9,20 @@ namespace WebDAVSharp.Server.Adapters
     /// <see cref="IHttpListener" /> implementation wraps around a
     /// <see cref="HttpListener" /> instance.
     /// </summary>
-    public sealed class HttpListenerAdapter : WebDavDisposableBase, IHttpListener, IAdapter<HttpListener>
+    internal sealed class HttpListenerAdapter : WebDavDisposableBase, IHttpListener, IAdapter<HttpListener>
     {
         private readonly HttpListener _listener;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpListenerAdapter" /> class.
         /// </summary>
-        public HttpListenerAdapter()
+        internal HttpListenerAdapter()
         {
-            _listener = new HttpListener();
-            _listener.AuthenticationSchemes = AuthenticationSchemes.Negotiate;
-            _listener.UnsafeConnectionNtlmAuthentication = false;
+            _listener = new HttpListener
+            {
+                AuthenticationSchemes = AuthenticationSchemes.Negotiate,
+                UnsafeConnectionNtlmAuthentication = false
+            };
         }
 
         /// <summary>
@@ -56,14 +58,10 @@ namespace WebDAVSharp.Server.Adapters
                 throw new ArgumentNullException("abortEvent");
 
             IAsyncResult ar = _listener.BeginGetContext(null, null);
-            int index = WaitHandle.WaitAny(new[] { abortEvent, ar.AsyncWaitHandle });
-            if (index == 1)
-            {
-                HttpListenerContext context = _listener.EndGetContext(ar);
-                return new HttpListenerContextAdapter(context);
-            }
-
-            return null;
+            int index = WaitHandle.WaitAny(new[] {abortEvent, ar.AsyncWaitHandle});
+            if (index != 1) return null;
+            HttpListenerContext context = _listener.EndGetContext(ar);
+            return new HttpListenerContextAdapter(context);
         }
 
         /// <summary>

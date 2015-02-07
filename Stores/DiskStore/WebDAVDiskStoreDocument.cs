@@ -38,11 +38,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// </summary>
         public long Size
         {
-            get
-            {
-                FileInfo fi = new FileInfo(ItemPath);
-                return fi.Length;
-            }
+            get { return new FileInfo(ItemPath).Length; }
         }
 
         /// <summary>
@@ -67,7 +63,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                 // we need to change this to the relative path
                 // For this moment, we can't get access to the root path for calculating the relative path, 
                 // because we don't have an instance of WebDAVDiskStore
-                return Md5Util.Md5HashStringForUtf8String("" + ItemPath + ModificationDate.ToString() + Hidden + Size);
+                return Md5Util.Md5HashStringForUtf8String(ItemPath + ModificationDate + Hidden + Size);
             }
         }
 
@@ -114,7 +110,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         {
             if (append)
             {
-                var result = new FileStream(ItemPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                FileStream result = new FileStream(ItemPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
                 result.Seek(0, SeekOrigin.End);
                 return result;
             }

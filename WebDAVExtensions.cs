@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Web;
 using WebDAVSharp.Server.Adapters;
@@ -10,7 +11,7 @@ namespace WebDAVSharp.Server
     /// <summary>
     /// This class holds extension methods for various types related to WebDAV#.
     /// </summary>
-    public static class WebDavExtensions
+    internal static class WebDavExtensions
     {
         /// <summary>
         /// Gets the Uri to the parent object.
@@ -71,14 +72,11 @@ namespace WebDAVSharp.Server
         public static Uri GetPrefixUri(this Uri uri, WebDavServer server)
         {
             string url = uri.ToString();
-            foreach (string prefix in server.Listener.Prefixes)
-            {
-                if (url.StartsWith(uri.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    return new Uri(prefix);
-                }
-            }
-
+            foreach (
+                string prefix in
+                    server.Listener.Prefixes.Where(
+                        prefix => url.StartsWith(uri.ToString(), StringComparison.OrdinalIgnoreCase)))
+                return new Uri(prefix);
             throw new WebDavInternalServerException("Unable to find correct server root");
         }
 

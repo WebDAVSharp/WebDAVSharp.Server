@@ -7,7 +7,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// <summary>
     /// This class implements the <c>DELETE</c> HTTP method for WebDAV#.
     /// </summary>
-    public class WebDavDeleteMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavDeleteMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
         /// <summary>
         /// Gets the collection of the names of the HTTP methods handled by this instance.

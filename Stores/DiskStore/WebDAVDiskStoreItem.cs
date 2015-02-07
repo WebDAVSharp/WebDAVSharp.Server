@@ -93,10 +93,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                 FileAttributes attr = File.GetAttributes(_path);
 
                 //detect whether its a directory or file
-                if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
-                    return true;
-                else
-                    return false;
+                return (attr & FileAttributes.Directory) == FileAttributes.Directory;
             }
         }
 
@@ -135,14 +132,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
             get
             {
                 DirectoryInfo dir = new DirectoryInfo(_path);
-                if ((dir.Attributes & FileAttributes.Hidden) != 0)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
+                return (dir.Attributes & FileAttributes.Hidden) != 0 ? 1 : 0;
             }
         }
 

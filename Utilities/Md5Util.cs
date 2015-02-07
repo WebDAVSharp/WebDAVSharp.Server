@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -9,7 +10,7 @@ namespace WebDAVSharp.Server.Utilities
     /// <remarks>
     /// Source: <see href="https://gist.github.com/kristopherjohnson/3021045" />
     /// </remarks>
-    public static class Md5Util
+    internal static class Md5Util
     {
         /// <summary>
         /// Compute hash for string encoded as UTF8
@@ -20,7 +21,7 @@ namespace WebDAVSharp.Server.Utilities
         {
             byte[] bytes = Encoding.UTF8.GetBytes(s);
 
-            var md5 = MD5.Create();
+            MD5 md5 = MD5.Create();
             byte[] hashBytes = md5.ComputeHash(bytes);
  
             return HexStringFromBytes(hashBytes);
@@ -35,12 +36,9 @@ namespace WebDAVSharp.Server.Utilities
         /// </returns>
         public static string HexStringFromBytes(byte[] bytes)
         {
-            var sb = new StringBuilder();
-            foreach (byte b in bytes)
-            {
-                var hex = b.ToString("x2");
+            StringBuilder sb = new StringBuilder();
+            foreach (string hex in bytes.Select(b => b.ToString("x2")))
                 sb.Append(hex);
-            }
             return sb.ToString();
         }
     }

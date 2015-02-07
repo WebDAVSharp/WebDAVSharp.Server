@@ -1,11 +1,11 @@
-﻿using Common.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Common.Logging;
 using WebDAVSharp.Server.Adapters;
 using WebDAVSharp.Server.Exceptions;
 using WebDAVSharp.Server.MethodHandlers;
@@ -68,20 +68,27 @@ namespace WebDAVSharp.Server
                 _ownsListener = true;
             }
             methodHandlers = methodHandlers ?? WebDavMethodHandlers.BuiltIn;
-            if (!methodHandlers.Any())
+
+            IWebDavMethodHandler[] webDavMethodHandlers = methodHandlers as IWebDavMethodHandler[] ?? methodHandlers.ToArray();
+
+            if (!webDavMethodHandlers.Any())
                 throw new ArgumentException("The methodHandlers collection is empty", "methodHandlers");
-            if (methodHandlers.Any(methodHandler => methodHandler == null))
+            if (webDavMethodHandlers.Any(methodHandler => methodHandler == null))
                 throw new ArgumentException("The methodHandlers collection contains a null-reference", "methodHandlers");
 
             _listener = listener;
             _store = store;
             var handlersWithNames =
-                from methodHandler in methodHandlers
+                from methodHandler in webDavMethodHandlers
                 from name in methodHandler.Names
-                select new { name, methodHandler };
+                select new
+                {
+                    name,
+                    methodHandler
+                };
             _methodHandlers = handlersWithNames.ToDictionary(v => v.name, v => v.methodHandler);
             _log = LogManager.GetCurrentClassLogger();
-        }
+            }
 
         /// <summary>
         /// Gets the 
@@ -92,7 +99,7 @@ namespace WebDAVSharp.Server
         /// <value>
         /// The listener.
         /// </value>
-        public IHttpListener Listener
+        internal IHttpListener Listener
         {
             get
             {
@@ -138,18 +145,25 @@ namespace WebDAVSharp.Server
         /// <exception cref="System.InvalidOperationException">This WebDAVServer instance is already running, call to Start is invalid at this point</exception>
         /// <exception cref="ObjectDisposedException">This <see cref="WebDavServer" /> instance has been disposed of.</exception>
         /// <exception cref="InvalidOperationException">The server is already running.</exception>
-        public void Start()
-        {
+        public void Start(String Url)
+            {
+            Listener.Prefixes.Add(Url);
             EnsureNotDisposed();
             lock (_threadLock)
-            {
+                {
                 if (_thread != null)
-                    throw new InvalidOperationException("This WebDAVServer instance is already running, call to Start is invalid at this point");
+                    {
+                    throw new InvalidOperationException(
+                        "This WebDAVServer instance is already running, call to Start is invalid at this point");
+                    }
 
                 _stopEvent = new ManualResetEvent(false);
 
-                _thread = new Thread(BackgroundThreadMethod);
-                _thread.Name = "WebDAVServer.Thread";
+                _thread = new Thread(BackgroundThreadMethod)
+                {
+                    Name = "WebDAVServer.Thread",
+                    Priority = ThreadPriority.Highest
+                };
                 _thread.Start();
             }
         }
@@ -168,7 +182,10 @@ namespace WebDAVSharp.Server
             lock (_threadLock)
             {
                 if (_thread == null)
-                    throw new InvalidOperationException("This WebDAVServer instance is not running, call to Stop is invalid at this point");
+                    {
+                    throw new InvalidOperationException(
+                        "This WebDAVServer instance is not running, call to Stop is invalid at this point");
+                    }
 
                 _stopEvent.Set();
                 _thread.Join();
@@ -222,10 +239,10 @@ namespace WebDAVSharp.Server
         private void ProcessRequest(object state)
         {
 
-            var context = (IHttpListenerContext)state;
+            IHttpListenerContext context = (IHttpListenerContext)state;
 
             // For authentication
-            Thread.SetData(Thread.GetNamedDataSlot(WebDavServer.HttpUser), context.AdaptedInstance.User.Identity);
+            Thread.SetData(Thread.GetNamedDataSlot(HttpUser), context.AdaptedInstance.User.Identity);
 
             _log.Info(context.Request.HttpMethod + " " + context.Request.RemoteEndPoint + ": " + context.Request.Url);
             try

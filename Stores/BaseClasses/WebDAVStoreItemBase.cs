@@ -54,14 +54,12 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
             set
             {
                 string fixedName = (value ?? string.Empty).Trim();
-                if (fixedName != _name)
-                {
-                    if (!OnNameChanging(_name, fixedName))
-                        throw new WebDavForbiddenException();
-                    string oldName = _name;
-                    _name = fixedName;
-                    OnNameChanged(oldName, _name);
-                }
+                if (fixedName == _name) return;
+                if (!OnNameChanging(_name, fixedName))
+                    throw new WebDavForbiddenException();
+                string oldName = _name;
+                _name = fixedName;
+                OnNameChanged(oldName, _name);
             }
         }
 
@@ -92,7 +90,7 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
         /// </summary>
         public virtual string ItemPath
         {
-            get { return ""; }
+            get { return String.Empty; }
         }
 
         /// <summary>
