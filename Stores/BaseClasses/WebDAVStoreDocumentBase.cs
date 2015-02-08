@@ -8,6 +8,8 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
     /// </summary>
     public class WebDavStoreDocumentBase : WebDavStoreItemBase
     {
+
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="WebDavStoreItemBase" /> class.
         /// </summary>
@@ -18,7 +20,9 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
         {
         }
 
-        #region IWebDAVStoreItem Members
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Gets or sets the mime type of this <see cref="IWebDavStoreItem" />.
@@ -35,5 +39,6 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
         }
 
         #endregion
+
     }
 }

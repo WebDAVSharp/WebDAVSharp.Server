@@ -10,8 +10,15 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// This is the base class for <see cref="IWebDavMethodHandler" /> implementations.
     /// </summary>
     internal abstract class WebDavMethodHandlerBase
-        {
+    {
+
+        #region Variables
+
         private const int DepthInfinity = -1;
+
+        #endregion
+
+        #region Static Functions
 
         /// <summary>
         /// Get the parent collection from the requested
@@ -159,5 +166,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             // else, throw exception
             throw new WebDavConflictException();
         }
+
+        #endregion
     }
 }

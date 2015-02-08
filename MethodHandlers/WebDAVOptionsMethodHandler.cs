@@ -9,6 +9,16 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// </summary>
     internal class WebDavOptionsMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
+        #region Variables
+
+        private static readonly List<string> verbsAllowed = new List<string> { "OPTIONS", "TRACE", "GET", "HEAD", "POST", "COPY", "PROPFIND", "LOCK", "UNLOCK" };
+
+        private static readonly List<string> verbsPublic = new List<string> { "OPTIONS", "GET", "HEAD", "PROPFIND", "PROPPATCH", "MKCOL", "PUT", "DELETE", "COPY", "MOVE", "LOCK", "UNLOCK" };
+
+        #endregion
+
+        #region Properties
+
         /// <summary>
         /// Gets the collection of the names of the HTTP methods handled by this instance.
         /// </summary>
@@ -23,6 +33,9 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
         }
 
+        #endregion
+
+        #region Functions
         /// <summary>
         /// Processes the request.
         /// </summary>
@@ -33,9 +46,6 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
         {
-            List<string> verbsAllowed = new List<string> { "OPTIONS", "TRACE", "GET", "HEAD", "POST", "COPY", "PROPFIND", "LOCK", "UNLOCK" };
-
-            List<string> verbsPublic = new List<string> { "OPTIONS", "GET", "HEAD", "PROPFIND", "PROPPATCH", "MKCOL", "PUT", "DELETE", "COPY", "MOVE", "LOCK", "UNLOCK" };
 
             foreach (string verb in verbsAllowed)
                 context.Response.AppendHeader("Allow", verb);
@@ -46,5 +56,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             // Sends 200 OK
             context.SendSimpleResponse();
         }
+
+        #endregion
     }
 }

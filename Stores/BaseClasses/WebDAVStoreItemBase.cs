@@ -8,9 +8,14 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
     /// </summary>
     public class WebDavStoreItemBase : IWebDavStoreItem
     {
+        #region Variables
+
         private readonly IWebDavStoreCollection _parentCollection;
         private string _name;
 
+        #endregion
+
+        #region Constuctor
         /// <summary>
         /// Initializes a new instance of the <see cref="WebDavStoreItemBase" /> class.
         /// </summary>
@@ -27,7 +32,9 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
             _name = name;
         }
 
-        #region IWebDAVStoreItem Members
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Gets the parent <see cref="IWebDavStoreCollection" /> that owns this <see cref="IWebDavStoreItem" />.
@@ -117,6 +124,8 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
 
         #endregion
 
+        #region Functions
+
         /// <summary>
         /// Called before the name of this <see cref="IWebDavStoreItem" /> is changing.
         /// </summary>
@@ -140,5 +149,7 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
         protected virtual void OnNameChanged(string oldName, string newName)
         {
         }
+
+        #endregion
     }
 }

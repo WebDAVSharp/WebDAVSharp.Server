@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web;
 using System.Xml;
@@ -17,10 +19,31 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// </summary>
     internal class WebDavPropfindMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
-        private ILog _log;
+        #region Variables
+
         private Uri _requestUri;
         private List<WebDavProperty> _requestedProperties;
         private List<IWebDavStoreItem> _webDavStoreItems;
+
+        private static List<WebDavProperty> _list = new List<WebDavProperty>
+            {
+                new WebDavProperty("creationdate"),
+                new WebDavProperty("displayname"),
+                new WebDavProperty("getcontentlength"),
+                new WebDavProperty("getcontenttype"),
+                new WebDavProperty("getetag"),
+                new WebDavProperty("getlastmodified"),
+                new WebDavProperty("resourcetype"),
+                new WebDavProperty("supportedlock"),
+                new WebDavProperty("ishidden")       ,
+                //new WebDavProperty("getcontentlanguage"),
+                //new WebDavProperty("lockdiscovery")
+            };
+
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Gets the collection of the names of the HTTP methods handled by this instance.
@@ -39,6 +62,10 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
         }
 
+        #endregion
+
+        #region Functions
+
         /// <summary>
         /// Processes the request.
         /// </summary>
@@ -50,8 +77,6 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException"></exception>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
         {
-            _log = LogManager.GetCurrentClassLogger();
-
             /***************************************************************************************************
              * Retreive all the information from the request
              ***************************************************************************************************/
@@ -77,12 +102,12 @@ namespace WebDAVSharp.Server.MethodHandlers
             if (requestDoc.DocumentElement != null)
             {
                 if (requestDoc.DocumentElement.LocalName != "propfind")
-                    _log.Debug("PROPFIND method without propfind in xml document");
+                    WebDavServer.Log.Debug("PROPFIND method without propfind in xml document");
                 else
                 {
                     XmlNode n = requestDoc.DocumentElement.FirstChild;
                     if (n == null)
-                        _log.Debug("propfind element without children");
+                        WebDavServer.Log.Debug("propfind element without children");
                     else
                     {
                         switch (n.LocalName)
@@ -151,7 +176,6 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavConflictException"></exception>
         private static List<IWebDavStoreItem> GetWebDavStoreItems(IWebDavStoreItem iWebDavStoreItem, int depth)
         {
-            ILog _log = LogManager.GetCurrentClassLogger();
             List<IWebDavStoreItem> list = new List<IWebDavStoreItem>();
 
             //IWebDavStoreCollection
@@ -162,17 +186,10 @@ namespace WebDAVSharp.Server.MethodHandlers
                 list.Add(collection);
                 if (depth == 0)
                     return list;
-                foreach (IWebDavStoreItem item in collection.Items)
-                {
-                    try
-                    {
-                        list.Add(item);
-                    }
-                    catch (Exception ex)
-                    {
-                        _log.Debug(ex.Message + "\r\n" + ex.StackTrace);
-                    }
-                }
+
+                foreach (IWebDavStoreItem item in collection.Items.Where(item => !list.Contains(item)))
+                    list.Add(item);
+
                 return list;
             }
             // if the item is not a document, throw conflict exception
@@ -195,7 +212,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <returns>
         /// The <see cref="XmlDocument" /> that contains the request body
         /// </returns>
-        private XmlDocument GetXmlDocument(IHttpListenerRequest request)
+        private static XmlDocument GetXmlDocument(IHttpListenerRequest request)
         {
             try
             {
@@ -205,14 +222,14 @@ namespace WebDAVSharp.Server.MethodHandlers
 
                 if (!String.IsNullOrEmpty(requestBody))
                 {
-                    var xmlDocument = new XmlDocument();
+                    XmlDocument xmlDocument = new XmlDocument();
                     xmlDocument.LoadXml(requestBody);
                     return xmlDocument;
                 }
             }
             catch (Exception)
             {
-                _log.Warn("XmlDocument has not been read correctly");
+                WebDavServer.Log.Warn("XmlDocument has not been read correctly");
             }
 
             return new XmlDocument();
@@ -224,23 +241,9 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <returns>
         /// The list with all the <see cref="WebDavProperty" />
         /// </returns>
-        private List<WebDavProperty> GetAllProperties()
+        private static List<WebDavProperty> GetAllProperties()
         {
-            List<WebDavProperty> list = new List<WebDavProperty>
-            {
-                new WebDavProperty("creationdate"),
-                new WebDavProperty("displayname"),
-                new WebDavProperty("getcontentlength"),
-                new WebDavProperty("getcontenttype"),
-                new WebDavProperty("getetag"),
-                new WebDavProperty("getlastmodified"),
-                new WebDavProperty("resourcetype"),
-                new WebDavProperty("supportedlock"),
-                new WebDavProperty("ishidden")
-            };
-            //list.Add(new WebDAVProperty("getcontentlanguage"));
-            //list.Add(new WebDAVProperty("lockdiscovery"));
-            return list;
+            return _list;
         }
 
         #endregion
@@ -274,14 +277,14 @@ namespace WebDAVSharp.Server.MethodHandlers
             foreach (IWebDavStoreItem webDavStoreItem in _webDavStoreItems)
             {
                 // Create the response element
-                WebDavProperty responseProperty = new WebDavProperty("response", "");
+                WebDavProperty responseProperty = new WebDavProperty("response", string.Empty);
                 XmlElement responseElement = responseProperty.ToXmlElement(responseDoc);
 
                 // The href element
                 Uri result;
                 if (count == 0)
                 {
-                    Uri.TryCreate(_requestUri, "", out result);
+                    Uri.TryCreate(_requestUri, string.Empty, out result);
                 }
                 else
                 {
@@ -292,11 +295,11 @@ namespace WebDAVSharp.Server.MethodHandlers
                 count++;
 
                 // The propstat element
-                WebDavProperty propstatProperty = new WebDavProperty("propstat", "");
+                WebDavProperty propstatProperty = new WebDavProperty("propstat", string.Empty);
                 XmlElement propstatElement = propstatProperty.ToXmlElement(responseDoc);
 
                 // The prop element
-                WebDavProperty propProperty = new WebDavProperty("prop", "");
+                WebDavProperty propProperty = new WebDavProperty("prop", string.Empty);
                 XmlElement propElement = propProperty.ToXmlElement(responseDoc);
 
                 foreach (WebDavProperty davProperty in _requestedProperties)
@@ -337,7 +340,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <returns>
         /// The <see cref="XmlElement" /> of the <see cref="WebDavProperty" /> containing a value or child elements
         /// </returns>
-        private XmlElement PropChildElement(WebDavProperty webDavProperty, XmlDocument xmlDocument, IWebDavStoreItem iWebDavStoreItem, bool isPropname)
+        private static XmlElement PropChildElement(WebDavProperty webDavProperty, XmlDocument xmlDocument, IWebDavStoreItem iWebDavStoreItem, bool isPropname)
         {
             // If Propfind request contains a propname element
             if (isPropname)
@@ -349,13 +352,13 @@ namespace WebDAVSharp.Server.MethodHandlers
             webDavProperty.Value = GetWebDavPropertyValue(iWebDavStoreItem, webDavProperty);
             XmlElement xmlElement = webDavProperty.ToXmlElement(xmlDocument);
 
-                // If the webDavProperty is the resourcetype property
-                // and the webDavStoreItem is a collection
-                // add the collection XmlElement as a child to the xmlElement
+            // If the webDavProperty is the resourcetype property
+            // and the webDavStoreItem is a collection
+            // add the collection XmlElement as a child to the xmlElement
             if (webDavProperty.Name != "resourcetype" || !iWebDavStoreItem.IsCollection)
                 return xmlElement;
 
-            WebDavProperty collectionProperty = new WebDavProperty("collection", "");
+            WebDavProperty collectionProperty = new WebDavProperty("collection", String.Empty);
             xmlElement.AppendChild(collectionProperty.ToXmlElement(xmlDocument));
             return xmlElement;
         }
@@ -368,7 +371,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <returns>
         /// A <see cref="string" /> containing the value
         /// </returns>
-        private string GetWebDavPropertyValue(IWebDavStoreItem webDavStoreItem, WebDavProperty davProperty)
+        private static string GetWebDavPropertyValue(IWebDavStoreItem webDavStoreItem, WebDavProperty davProperty)
         {
             switch (davProperty.Name)
             {
@@ -377,27 +380,27 @@ namespace WebDAVSharp.Server.MethodHandlers
                 case "displayname":
                     return webDavStoreItem.Name;
                 case "getcontentlanguage":
-                    // still to implement !!!
+                    //todo getcontentlanguage
                     return String.Empty;
                 case "getcontentlength":
-                    return (!webDavStoreItem.IsCollection ? "" + ((IWebDavStoreDocument) webDavStoreItem).Size : "");
+                    return (!webDavStoreItem.IsCollection ? "" + ((IWebDavStoreDocument)webDavStoreItem).Size : string.Empty);
                 case "getcontenttype":
-                    return (!webDavStoreItem.IsCollection ? "" + ((IWebDavStoreDocument) webDavStoreItem).MimeType : "");
+                    return (!webDavStoreItem.IsCollection ? "" + ((IWebDavStoreDocument)webDavStoreItem).MimeType : string.Empty);
                 case "getetag":
-                    return (!webDavStoreItem.IsCollection ? "" + ((IWebDavStoreDocument) webDavStoreItem).Etag : "");
+                    return (!webDavStoreItem.IsCollection ? "" + ((IWebDavStoreDocument)webDavStoreItem).Etag : string.Empty);
                 case "getlastmodified":
                     return webDavStoreItem.ModificationDate.ToUniversalTime().ToString("R");
                 case "lockdiscovery":
-                    // still to implement !!!
+                    //todo lockdiscovery
                     return String.Empty;
                 case "resourcetype":
                     return "";
                 case "supportedlock":
-                    // still to implement !!!
+                    //todo supportedlock
                     return "";
-                    //webDavProperty.Value = "<D:lockentry><D:lockscope><D:shared/></D:lockscope><D:locktype><D:write/></D:locktype></D:lockentry>";
+                //webDavProperty.Value = "<D:lockentry><D:lockscope><D:shared/></D:lockscope><D:locktype><D:write/></D:locktype></D:lockentry>";
                 case "ishidden":
-                    return "" + webDavStoreItem.Hidden;
+                    return  webDavStoreItem.Hidden.ToString(CultureInfo.InvariantCulture);
                 default:
                     return String.Empty;
             }
@@ -412,7 +415,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// </summary>
         /// <param name="context">The <see cref="IHttpListenerContext" /> containing the response</param>
         /// <param name="responseDocument">The <see cref="XmlDocument" /> containing the response body</param>
-        private static void SendResponse(IHttpListenerContext context, XmlDocument responseDocument)
+        private static void SendResponse(IHttpListenerContext context, XmlNode responseDocument)
         {
             // convert the XmlDocument
             byte[] responseBytes = Encoding.UTF8.GetBytes(responseDocument.InnerXml);
@@ -427,6 +430,8 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             context.Response.Close();
         }
+
+        #endregion
 
         #endregion
 

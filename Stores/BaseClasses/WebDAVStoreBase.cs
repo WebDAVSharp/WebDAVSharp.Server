@@ -7,7 +7,14 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
     /// </summary>
     public abstract class WebDavStoreBase : IWebDavStore
     {
+
+        #region Variables
+
         private readonly IWebDavStoreCollection _root;
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebDavStoreBase" /> class.
@@ -23,7 +30,9 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
             _root = root;
         }
 
-        #region IWebDAVStore Members
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Gets the root collection of this <see cref="IWebDavStore" />.
@@ -37,5 +46,6 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
         }
 
         #endregion
+
     }
 }

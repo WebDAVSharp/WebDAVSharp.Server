@@ -12,6 +12,9 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// </summary>
     internal sealed class WebDavGetMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
+
+        #region Properties
+
         /// <summary>
         /// Gets the collection of the names of the verbs handled by this instance.
         /// </summary>
@@ -28,6 +31,10 @@ namespace WebDAVSharp.Server.MethodHandlers
                 };
             }
         }
+
+        #endregion
+
+        #region Functions
 
         /// <summary>
         /// Processes the request.
@@ -73,5 +80,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
             context.Response.Close();
         }
+
+        #endregion
     }
 }

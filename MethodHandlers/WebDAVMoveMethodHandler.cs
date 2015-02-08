@@ -13,6 +13,7 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// </summary>
     internal class WebDavMoveMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
+        #region Properties
         /// <summary>
         /// Gets the collection of the names of the HTTP methods handled by this instance.
         /// </summary>
@@ -30,6 +31,10 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
         }
 
+        #endregion
+
+        #region Functions
+
         /// <summary>
         /// Processes the request.
         /// </summary>
@@ -40,7 +45,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
         {
-            var source = context.Request.Url.GetItem(server, store);
+            IWebDavStoreItem source = context.Request.Url.GetItem(server, store);
 
             MoveItem(server, context, store, source);
         }
@@ -56,7 +61,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <param name="sourceWebDavStoreItem">The <see cref="IWebDavStoreItem" /> that will be moved</param>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavForbiddenException">If the source path is the same as the destination path</exception>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavPreconditionFailedException">If one of the preconditions failed</exception>
-        private void MoveItem(WebDavServer server, IHttpListenerContext context, IWebDavStore store,
+        private static void MoveItem(WebDavServer server, IHttpListenerContext context, IWebDavStore store,
             IWebDavStoreItem sourceWebDavStoreItem)
         {
             Uri destinationUri = GetDestinationHeader(context.Request);
@@ -83,5 +88,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             // send correct response
             context.SendSimpleResponse(isNew ? HttpStatusCode.Created : HttpStatusCode.NoContent);
         }
+
+        #endregion
     }
 }

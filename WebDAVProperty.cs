@@ -7,6 +7,9 @@ namespace WebDAVSharp.Server
     /// </summary>
     internal class WebDavProperty
     {
+
+        #region Variables
+
         /// <summary>
         /// This class implements the core WebDAV server.
         /// </summary>
@@ -21,6 +24,10 @@ namespace WebDAVSharp.Server
         /// This class implements the core WebDAV server.
         /// </summary>
         public string Value;
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
         /// Standard constructor
@@ -67,6 +74,10 @@ namespace WebDAVSharp.Server
             Value = value;
             Namespace = ns;
         }
+
+        #endregion
+
+        #region Functions
 
         /// <summary>
         /// This class implements the core WebDAV server.
@@ -146,5 +157,8 @@ namespace WebDAVSharp.Server
             return element;
             // else, return XmlElement without namespace
         }
+
+        #endregion
+
     }
 }

@@ -13,8 +13,13 @@ namespace WebDAVSharp.Server.Adapters
     /// </summary>
     internal sealed class HttpListenerRequestAdapter : IHttpListenerRequest
     {
+        #region Private Variables
+
         private readonly HttpListenerRequest _request;
 
+        #endregion
+
+        #region Public Functions
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpListenerRequestAdapter" /> class.
         /// </summary>
@@ -28,6 +33,10 @@ namespace WebDAVSharp.Server.Adapters
 
             _request = request;
         }
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Gets the internal instance that was adapted for WebDAV#.
@@ -119,5 +128,7 @@ namespace WebDAVSharp.Server.Adapters
                 return _request.ContentLength64;
             }
         }
+
+        #endregion
     }
 }

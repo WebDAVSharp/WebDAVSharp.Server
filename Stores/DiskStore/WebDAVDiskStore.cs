@@ -10,8 +10,14 @@ namespace WebDAVSharp.Server.Stores.DiskStore
     [DebuggerDisplay("Disk Store ({RootPath})")]
     public sealed class WebDavDiskStore : IWebDavStore
     {
+
+        #region Variables
+
         private readonly string _rootPath;
 
+        #endregion
+
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="WebDavDiskStore" /> class.
         /// </summary>
@@ -23,13 +29,16 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         public WebDavDiskStore(string rootPath)
         {
             if (rootPath == null)
-                throw new ArgumentNullException(rootPath);
+                throw new ArgumentNullException("rootPath");
             if (!Directory.Exists(rootPath))
                 throw new DirectoryNotFoundException(rootPath);
 
             _rootPath = rootPath;
         }
 
+        #endregion
+
+        #region Properties
         /// <summary>
         /// Gets the root path for the folder that is hosted in this <see cref="WebDavDiskStore" />.
         /// </summary>
@@ -44,8 +53,6 @@ namespace WebDAVSharp.Server.Stores.DiskStore
             }
         }
 
-        #region IWebDAVStore Members
-
         /// <summary>
         /// Gets the root collection of this <see cref="IWebDavStore" />.
         /// </summary>
@@ -58,5 +65,6 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         }
 
         #endregion
+
     }
 }

@@ -18,20 +18,66 @@ namespace WebDAVSharp.Server
     /// </summary>
     public class WebDavServer : WebDavDisposableBase
     {
-        /// <summary>
-        /// The HTTP user
-        /// </summary>
-        public const string HttpUser = "HTTP.User";
 
+        #region Variables
+
+        internal const string HttpUser = "HTTP.User";
         private readonly IHttpListener _listener;
         private readonly bool _ownsListener;
         private readonly IWebDavStore _store;
         private readonly Dictionary<string, IWebDavMethodHandler> _methodHandlers;
-        private readonly ILog _log;
+        internal readonly static ILog _log = LogManager.GetCurrentClassLogger();
         private readonly object _threadLock = new object();
 
         private ManualResetEvent _stopEvent;
         private Thread _thread;
+
+        #endregion
+
+        #region Properties
+
+        internal static ILog Log
+        {
+            get
+            {
+                return _log;
+            }
+        }
+
+        /// <summary>
+        /// Gets the 
+        /// <see cref="IHttpListener" /> that this 
+        /// <see cref="WebDavServer" /> uses for
+        /// the web server portion.
+        /// </summary>
+        /// <value>
+        /// The listener.
+        /// </value>
+        internal IHttpListener Listener
+        {
+            get
+            {
+                return _listener;
+            }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="IWebDavStore" /> this <see cref="WebDavServer" /> is hosting.
+        /// </summary>
+        /// <value>
+        /// The store.
+        /// </value>
+        public IWebDavStore Store
+        {
+            get
+            {
+                return _store;
+            }
+        }
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebDavServer" /> class.
@@ -87,39 +133,11 @@ namespace WebDAVSharp.Server
                     methodHandler
                 };
             _methodHandlers = handlersWithNames.ToDictionary(v => v.name, v => v.methodHandler);
-            _log = LogManager.GetCurrentClassLogger();
-            }
-
-        /// <summary>
-        /// Gets the 
-        /// <see cref="IHttpListener" /> that this 
-        /// <see cref="WebDavServer" /> uses for
-        /// the web server portion.
-        /// </summary>
-        /// <value>
-        /// The listener.
-        /// </value>
-        internal IHttpListener Listener
-        {
-            get
-            {
-                return _listener;
-            }
         }
 
-        /// <summary>
-        /// Gets the <see cref="IWebDavStore" /> this <see cref="WebDavServer" /> is hosting.
-        /// </summary>
-        /// <value>
-        /// The store.
-        /// </value>
-        public IWebDavStore Store
-        {
-            get
-            {
-                return _store;
-            }
-        }
+        #endregion
+
+        #region Functions
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources
@@ -145,17 +163,17 @@ namespace WebDAVSharp.Server
         /// <exception cref="System.InvalidOperationException">This WebDAVServer instance is already running, call to Start is invalid at this point</exception>
         /// <exception cref="ObjectDisposedException">This <see cref="WebDavServer" /> instance has been disposed of.</exception>
         /// <exception cref="InvalidOperationException">The server is already running.</exception>
-        public void Start(String Url)
-            {
-            Listener.Prefixes.Add(Url);
+        public void Start(String url)
+        {
+            Listener.Prefixes.Add(url);
             EnsureNotDisposed();
             lock (_threadLock)
-                {
+            {
                 if (_thread != null)
-                    {
+                {
                     throw new InvalidOperationException(
                         "This WebDAVServer instance is already running, call to Start is invalid at this point");
-                    }
+                }
 
                 _stopEvent = new ManualResetEvent(false);
 
@@ -182,10 +200,10 @@ namespace WebDAVSharp.Server
             lock (_threadLock)
             {
                 if (_thread == null)
-                    {
+                {
                     throw new InvalidOperationException(
                         "This WebDAVServer instance is not running, call to Stop is invalid at this point");
-                    }
+                }
 
                 _stopEvent.Set();
                 _thread.Join();
@@ -307,5 +325,7 @@ namespace WebDAVSharp.Server
                 _log.Info(context.Response.StatusCode + " " + context.Response.StatusDescription + ": " + context.Request.HttpMethod + " " + context.Request.RemoteEndPoint + ": " + context.Request.Url);
             }
         }
+
+        #endregion
     }
 }

@@ -6,7 +6,6 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Xml;
-using Common.Logging;
 using WebDAVSharp.Server.Adapters;
 using WebDAVSharp.Server.Exceptions;
 using WebDAVSharp.Server.Stores;
@@ -18,6 +17,9 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// </summary>
     internal class WebDavLockMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
+
+        #region Properties
+
         /// <summary>
         /// Gets the collection of the names of the HTTP methods handled by this instance.
         /// </summary>
@@ -35,6 +37,10 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
         }
 
+        #endregion
+
+        #region Functions
+
         /// <summary>
         /// Processes the request.
         /// </summary>
@@ -46,8 +52,6 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavPreconditionFailedException"></exception>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
         {
-            ILog log = LogManager.GetCurrentClassLogger();
-
             /***************************************************************************************************
              * Retreive al the information from the request
              ***************************************************************************************************/
@@ -57,8 +61,8 @@ namespace WebDAVSharp.Server.MethodHandlers
             string timeout = GetTimeoutHeader(context.Request);
 
             // Initiate the XmlNamespaceManager and the XmlNodes
-            XmlNamespaceManager manager = null;
-            XmlNode lockscopeNode = null, locktypeNode = null, ownerNode = null;
+            XmlNamespaceManager manager;
+            XmlNode lockscopeNode, locktypeNode , ownerNode ;
 
             // try to read the body
             try
@@ -74,7 +78,7 @@ namespace WebDAVSharp.Server.MethodHandlers
                     if (requestDocument.DocumentElement != null && requestDocument.DocumentElement.LocalName != "prop" &&
                         requestDocument.DocumentElement.LocalName != "lockinfo")
                     {
-                        log.Debug("LOCK method without prop or lockinfo element in xml document");
+                      WebDavServer.Log.Debug("LOCK method without prop or lockinfo element in xml document");
                     }
 
                     manager = new XmlNamespaceManager(requestDocument.NameTable);
@@ -95,7 +99,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
             catch (Exception ex)
             {
-                log.Warn(ex.Message);
+                WebDavServer.Log.Warn(ex.Message);
                 throw;
             }
 
@@ -111,7 +115,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             try
             {
                 // Get the item from the collection
-                IWebDavStoreItem item = GetItemFromCollection(collection, context.Request.Url);
+                GetItemFromCollection(collection, context.Request.Url);
             }
             catch (Exception)
             {
@@ -127,8 +131,8 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             // Create the basic response XmlDocument
             XmlDocument responseDoc = new XmlDocument();
-            string responseXml = "<?xml version=\"1.0\" encoding=\"utf-8\" ?><D:prop " +
-                "xmlns:D=\"DAV:\"><D:lockdiscovery><D:activelock/></D:lockdiscovery></D:prop>";
+            const string responseXml = "<?xml version=\"1.0\" encoding=\"utf-8\" ?><D:prop " +
+                                       "xmlns:D=\"DAV:\"><D:lockdiscovery><D:activelock/></D:lockdiscovery></D:prop>";
             responseDoc.LoadXml(responseXml);
 
             // Select the activelock XmlNode
@@ -150,7 +154,7 @@ namespace WebDAVSharp.Server.MethodHandlers
             activelock.AppendChild(depthProperty.ToXmlElement(responseDoc));
             
             // The locktoken element
-            WebDavProperty locktokenProperty = new WebDavProperty("locktoken", "");
+            WebDavProperty locktokenProperty = new WebDavProperty("locktoken", string.Empty);
             XmlElement locktokenElement = locktokenProperty.ToXmlElement(responseDoc);
             WebDavProperty hrefProperty = new WebDavProperty("href", "opaquelocktoken:e71d4fae-5dec-22df-fea5-00a0c93bd5eb1");
             locktokenElement.AppendChild(hrefProperty.ToXmlElement(responseDoc));
@@ -187,5 +191,8 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             context.Response.Close();
         }
+
+        #endregion
+
     }
 }
