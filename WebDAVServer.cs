@@ -70,7 +70,10 @@ namespace WebDAVSharp.Server
                 WebDavStoreItemLock.MaxCheckOutSeconds = value;
             }
         }
-        internal static ILog Log
+        /// <summary>
+        /// Logging Interface
+        /// </summary>
+        public  static ILog Log
         {
             get
             {
@@ -396,7 +399,9 @@ namespace WebDAVSharp.Server
                     context.Response.ContentEncoding = Encoding.UTF8;
                     context.Response.ContentLength64 = buffer.Length;
                     context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+                    context.Response.OutputStream.Flush();
                 }
+
                 context.Response.Close();
             }
             finally

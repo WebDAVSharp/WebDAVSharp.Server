@@ -68,16 +68,26 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             using (Stream stream = doc.OpenReadStream())
             {
-                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                if (stream == null)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.OK;
+                    context.Response.ContentLength64 = 0;
+                }
+                else
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.OK;
 
-                if (docSize > 0)
-                    context.Response.ContentLength64 = docSize;
+                    if (docSize > 0)
+                        context.Response.ContentLength64 = docSize;
 
-                byte[] buffer = new byte[4096];
-                int inBuffer;
-                while ((inBuffer = stream.Read(buffer, 0, buffer.Length)) > 0)
-                    context.Response.OutputStream.Write(buffer, 0, inBuffer);
+                    byte[] buffer = new byte[4096];
+                    int inBuffer;
+                    while ((inBuffer = stream.Read(buffer, 0, buffer.Length)) > 0)
+                        context.Response.OutputStream.Write(buffer, 0, inBuffer);
+                    context.Response.OutputStream.Flush();
+                }
             }
+            
             context.Response.Close();
         }
 
