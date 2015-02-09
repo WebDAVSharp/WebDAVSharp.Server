@@ -12,6 +12,7 @@ using WebDAVSharp.Server.Adapters.AuthenticationTypes;
 using WebDAVSharp.Server.Exceptions;
 using WebDAVSharp.Server.MethodHandlers;
 using WebDAVSharp.Server.Stores;
+using WebDAVSharp.Server.Stores.Locks;
 
 namespace WebDAVSharp.Server
 {
@@ -40,6 +41,35 @@ namespace WebDAVSharp.Server
 
         #region Properties
 
+        /// <summary>
+        /// Allow users to have Indefinite Locks
+        /// </summary>
+        public bool AllowInfiniteCheckouts
+        {
+            get
+            {
+                return WebDavStoreItemLock.AllowInfiniteCheckouts;
+            }
+            set
+            {
+                WebDavStoreItemLock.AllowInfiniteCheckouts = value;
+            }
+        }
+
+        /// <summary>
+        /// The maximum number of seconds a person can check an item out for.
+        /// </summary>
+        public long MaxCheckOutSeconds
+        {
+            get
+            {
+                return WebDavStoreItemLock.MaxCheckOutSeconds;
+            }
+            set
+            {
+                WebDavStoreItemLock.MaxCheckOutSeconds = value;
+            }
+        }
         internal static ILog Log
         {
             get
@@ -78,6 +108,7 @@ namespace WebDAVSharp.Server
                 return _listener;
             }
         }
+
         #endregion
 
         #region Constructor
