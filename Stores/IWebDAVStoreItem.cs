@@ -1,4 +1,7 @@
 using System;
+using System.Net;
+using System.Runtime.InteropServices;
+using WebDAVSharp.Server.Stores.Locks;
 
 namespace WebDAVSharp.Server.Stores
 {
@@ -88,5 +91,7 @@ namespace WebDAVSharp.Server.Stores
         {
             get;
         }
+
+        
     }
 }

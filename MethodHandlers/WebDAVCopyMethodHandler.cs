@@ -88,7 +88,7 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             destinationParentCollection.CopyItemHere(source, destinationName, copyContent);
 
-            context.SendSimpleResponse(isNew ? HttpStatusCode.Created : HttpStatusCode.NoContent);
+            context.SendSimpleResponse(isNew ? (int)HttpStatusCode.Created : (int)HttpStatusCode.NoContent);
         }
 
         #endregion

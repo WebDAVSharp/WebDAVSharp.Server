@@ -85,7 +85,7 @@ namespace WebDAVSharp.Server.MethodHandlers
                 }
             }
 
-            context.SendSimpleResponse(HttpStatusCode.Created);
+            context.SendSimpleResponse((int)HttpStatusCode.Created);
         }
 
         #endregion

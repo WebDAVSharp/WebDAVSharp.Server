@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Net;
+using System.Security.Principal;
 using System.Threading;
 
-namespace WebDAVSharp.Server.Adapters
+namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
 {
     /// <summary>
     /// This 
     /// <see cref="IHttpListener" /> implementation wraps around a
     /// <see cref="HttpListener" /> instance.
     /// </summary>
-    internal sealed class HttpListenerAdapter : WebDavDisposableBase, IHttpListener, IAdapter<HttpListener>
+    internal sealed class HttpListenerNegotiateAdapter : WebDavDisposableBase, IHttpListener, IAdapter<HttpListener>
     {
         #region Private Variables
 
@@ -49,9 +50,9 @@ namespace WebDAVSharp.Server.Adapters
 
         #region Constructor
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpListenerAdapter" /> class.
+        /// Initializes a new instance of the <see cref="HttpListenerNegotiateAdapter" /> class.
         /// </summary>
-        internal HttpListenerAdapter()
+        internal HttpListenerNegotiateAdapter()
         {
             _listener = new HttpListener
             {
@@ -119,6 +120,11 @@ namespace WebDAVSharp.Server.Adapters
         public void Stop()
         {
             _listener.Stop();
+        }
+
+        public IIdentity GetIdentity(IHttpListenerContext context)
+        {
+            return context.AdaptedInstance.User.Identity;
         }
 
         #endregion

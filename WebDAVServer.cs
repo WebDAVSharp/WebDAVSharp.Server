@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using Common.Logging;
 using WebDAVSharp.Server.Adapters;
+using WebDAVSharp.Server.Adapters.AuthenticationTypes;
 using WebDAVSharp.Server.Exceptions;
 using WebDAVSharp.Server.MethodHandlers;
 using WebDAVSharp.Server.Stores;
@@ -20,15 +22,17 @@ namespace WebDAVSharp.Server
     {
 
         #region Variables
+        /// <summary>
+        /// The HTTP user
+        /// </summary>
+        public const string HttpUser = "HTTP.User";
 
-        internal const string HttpUser = "HTTP.User";
         private readonly IHttpListener _listener;
         private readonly bool _ownsListener;
         private readonly IWebDavStore _store;
         private readonly Dictionary<string, IWebDavMethodHandler> _methodHandlers;
         internal readonly static ILog _log = LogManager.GetCurrentClassLogger();
         private readonly object _threadLock = new object();
-
         private ManualResetEvent _stopEvent;
         private Thread _thread;
 
@@ -41,6 +45,20 @@ namespace WebDAVSharp.Server
             get
             {
                 return _log;
+            }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="IWebDavStore" /> this <see cref="WebDavServer" /> is hosting.
+        /// </summary>
+        /// <value>
+        /// The store.
+        /// </value>
+        public IWebDavStore Store
+        {
+            get
+            {
+                return _store;
             }
         }
 
@@ -60,26 +78,58 @@ namespace WebDAVSharp.Server
                 return _listener;
             }
         }
-
-        /// <summary>
-        /// Gets the <see cref="IWebDavStore" /> this <see cref="WebDavServer" /> is hosting.
-        /// </summary>
-        /// <value>
-        /// The store.
-        /// </value>
-        public IWebDavStore Store
-        {
-            get
-            {
-                return _store;
-            }
-        }
-
         #endregion
 
         #region Constructor
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="store"></param>
+        /// <param name="authtype"></param>
+        /// <param name="methodHandlers"></param>
+        public WebDavServer(IWebDavStore store, AuthType authtype, IEnumerable<IWebDavMethodHandler> methodHandlers = null)
+        {
+            _ownsListener = true;
+            switch (authtype)
+            {
+                case AuthType.Basic:
+                    _listener = new HttpListenerBasicAdapter();
+                    break;
+                case AuthType.Negotiate:
+                    _listener = new HttpListenerNegotiateAdapter();
+                    break;
+                case AuthType.Anonymous:
+                    _listener = new HttpListenerAnyonymousAdapter();
+                    break;
+
+            }
+            methodHandlers = methodHandlers ?? WebDavMethodHandlers.BuiltIn;
+
+            IWebDavMethodHandler[] webDavMethodHandlers = methodHandlers as IWebDavMethodHandler[] ?? methodHandlers.ToArray();
+
+            if (!webDavMethodHandlers.Any())
+                throw new ArgumentException("The methodHandlers collection is empty", "methodHandlers");
+            if (webDavMethodHandlers.Any(methodHandler => methodHandler == null))
+                throw new ArgumentException("The methodHandlers collection contains a null-reference", "methodHandlers");
+
+            //_negotiateListener = listener;
+            _store = store;
+            var handlersWithNames =
+                from methodHandler in webDavMethodHandlers
+                from name in methodHandler.Names
+                select new
+                {
+                    name,
+                    methodHandler
+                };
+            _methodHandlers = handlersWithNames.ToDictionary(v => v.name, v => v.methodHandler);
+
+        }
+
+        /// <summary>
+        /// This constructor uses a Negotiate Listener if one isn't passed.
+        /// 
         /// Initializes a new instance of the <see cref="WebDavServer" /> class.
         /// </summary>
         /// <param name="store">The 
@@ -110,7 +160,7 @@ namespace WebDAVSharp.Server
                 throw new ArgumentNullException("store");
             if (listener == null)
             {
-                listener = new HttpListenerAdapter();
+                listener = new HttpListenerNegotiateAdapter();
                 _ownsListener = true;
             }
             methodHandlers = methodHandlers ?? WebDavMethodHandlers.BuiltIn;
@@ -256,11 +306,9 @@ namespace WebDAVSharp.Server
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavInternalServerException">If the server had an internal problem</exception>
         private void ProcessRequest(object state)
         {
-
             IHttpListenerContext context = (IHttpListenerContext)state;
 
-            // For authentication
-            Thread.SetData(Thread.GetNamedDataSlot(HttpUser), context.AdaptedInstance.User.Identity);
+            Thread.SetData(Thread.GetNamedDataSlot(HttpUser), Listener.GetIdentity(context));
 
             _log.Info(context.Request.HttpMethod + " " + context.Request.RemoteEndPoint + ": " + context.Request.Url);
             try

@@ -46,9 +46,9 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
             catch (UnauthorizedAccessException)
             {
-                throw  new WebDavUnauthorizedException();
+                throw new WebDavUnauthorizedException();
             }
-            catch(WebDavNotFoundException)
+            catch (WebDavNotFoundException)
             {
                 throw new WebDavConflictException();
             }
@@ -129,6 +129,18 @@ namespace WebDAVSharp.Server.MethodHandlers
             // check if the string is valid and if it equals T
             return overwrite != null && overwrite.Equals("T");
             // else, return false
+        }
+
+        public static string GetLockTokenIfHeader(IHttpListenerRequest request)
+        {
+            //(<urn:uuid:cfdc70da-7feb-4bfe-8cb7-18f97d8fecb1>)
+            return request.Headers.AllKeys.Contains("If") ? request.Headers["If"].Substring(2, request.Headers["If"].Length-4) : string.Empty;
+        }
+        public static string GetLockTokenHeader(IHttpListenerRequest request)
+        {
+            if (!request.Headers.AllKeys.Contains("Lock-Token")) return string.Empty;
+            string token = request.Headers["Lock-Token"];
+            return (token.Substring(1, token.Length - 2));
         }
 
         /// <summary>

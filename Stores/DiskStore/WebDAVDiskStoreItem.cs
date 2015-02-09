@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Security.Principal;
 using System.Threading;
-using Common.Logging;
 using WebDAVSharp.Server.Stores.BaseClasses;
 
 namespace WebDAVSharp.Server.Stores.DiskStore
@@ -43,12 +42,15 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// <param name="path">The path that this <see cref="WebDavDiskStoreItem" /> maps to.</param>
         /// <exception cref="System.ArgumentNullException">path</exception>
         /// <exception cref="ArgumentNullException"><paramref name="path" /> is <c>null</c> or empty.</exception>
-        protected WebDavDiskStoreItem(WebDavDiskStoreCollection parentCollection, string path) : base(parentCollection, path)
+        protected WebDavDiskStoreItem(WebDavDiskStoreCollection parentCollection, string path)
+            : base(parentCollection, path)
         {
             if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException("path");
             _path = path;
+
             Identity = (WindowsIdentity)Thread.GetData(Thread.GetNamedDataSlot(WebDavServer.HttpUser));
+            
         }
 
         #endregion
@@ -65,7 +67,7 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                 return _path;
             }
         }
-        
+
         /// <summary>
         /// Gets or sets the name of this <see cref="IWebDavStoreItem" />.
         /// </summary>
@@ -138,5 +140,8 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         }
 
         #endregion
+
+
+        
     }
 }

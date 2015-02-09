@@ -8,7 +8,7 @@ namespace WebDAVSharp.Server.Adapters
     /// <see cref="IHttpListenerContext" /> implementation wraps around a
     /// <see cref="HttpListenerContext" /> instance.
     /// </summary>
-    internal sealed class HttpListenerContextAdapter : IHttpListenerContext, IAdapter<HttpListenerContext>
+    public sealed class HttpListenerContextAdapter : IHttpListenerContext, IAdapter<HttpListenerContext>
     {
         #region Private Variables
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using Common.Logging;
 using WebDAVSharp.Server.Adapters;
 using WebDAVSharp.Server.Exceptions;
 using WebDAVSharp.Server.Stores;
+using WebDAVSharp.Server.Stores.Locks;
 using WebDAVSharp.Server.Utilities;
 
 namespace WebDAVSharp.Server.MethodHandlers
@@ -62,6 +64,8 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
         }
 
+        internal IHttpListenerContext _Context;
+
         #endregion
 
         #region Functions
@@ -77,6 +81,7 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException"></exception>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
         {
+            _Context = context;
             /***************************************************************************************************
              * Retreive all the information from the request
              ***************************************************************************************************/
@@ -302,10 +307,17 @@ namespace WebDAVSharp.Server.MethodHandlers
                 WebDavProperty propProperty = new WebDavProperty("prop", string.Empty);
                 XmlElement propElement = propProperty.ToXmlElement(responseDoc);
 
-                foreach (WebDavProperty davProperty in _requestedProperties)
-                {
+                //All properties but lockdiscovery and supportedlock can be handled here.
+                foreach (WebDavProperty davProperty in _requestedProperties.Where(d => d.Name != "lockdiscovery" && d.Name != "supportedlock"))
                     propElement.AppendChild(PropChildElement(davProperty, responseDoc, webDavStoreItem, propname));
-                }
+
+                //Since lockdiscovery returns an xml tree, we need to process it seperately.
+                if (_requestedProperties.FirstOrDefault(d => d.Name == "lockdiscovery") != null)
+                    propElement.AppendChild(LockDiscovery(result, ref responseDoc));
+
+                //Since supportedlock returns an xml tree, we need to process it seperately.
+                if (_requestedProperties.FirstOrDefault(d => d.Name == "supportedlock") != null)
+                    propElement.AppendChild(SupportedLocks(ref responseDoc));
 
                 // Add the prop element to the propstat element
                 propstatElement.AppendChild(propElement);
@@ -348,9 +360,11 @@ namespace WebDAVSharp.Server.MethodHandlers
                 webDavProperty.Value = String.Empty;
                 return webDavProperty.ToXmlElement(xmlDocument);
             }
+
             // If not, add the values to webDavProperty
             webDavProperty.Value = GetWebDavPropertyValue(iWebDavStoreItem, webDavProperty);
             XmlElement xmlElement = webDavProperty.ToXmlElement(xmlDocument);
+
 
             // If the webDavProperty is the resourcetype property
             // and the webDavStoreItem is a collection
@@ -390,20 +404,137 @@ namespace WebDAVSharp.Server.MethodHandlers
                     return (!webDavStoreItem.IsCollection ? "" + ((IWebDavStoreDocument)webDavStoreItem).Etag : string.Empty);
                 case "getlastmodified":
                     return webDavStoreItem.ModificationDate.ToUniversalTime().ToString("R");
-                case "lockdiscovery":
-                    //todo lockdiscovery
-                    return String.Empty;
                 case "resourcetype":
+                    //todo Add resourceType
                     return "";
-                case "supportedlock":
-                    //todo supportedlock
-                    return "";
-                //webDavProperty.Value = "<D:lockentry><D:lockscope><D:shared/></D:lockscope><D:locktype><D:write/></D:locktype></D:lockentry>";
                 case "ishidden":
-                    return  webDavStoreItem.Hidden.ToString(CultureInfo.InvariantCulture);
+                    return webDavStoreItem.Hidden.ToString(CultureInfo.InvariantCulture);
                 default:
                     return String.Empty;
             }
+        }
+
+        /// <summary>
+        /// Returns an XML Fragment which details the supported locks on this implementation.
+        /// 15.10 supportedlock Property
+        /// Name:
+        ///     supportedlock
+        /// Purpose:
+        ///     To provide a listing of the lock capabilities supported by the resource.
+        /// Protected:
+        ///     MUST be protected. Servers, not clients, determine what lock mechanisms are supported.
+        /// COPY/MOVE behavior:
+        ///    This property value is dependent on the kind of locks supported at the destination, not on the value of the property at the source resource. Servers attempting to COPY to a destination should not attempt to set this property at the destination.
+        /// Description:
+        ///     Returns a listing of the combinations of scope and access types that may be specified in a lock request on the resource. Note that the actual contents are themselves controlled by access controls, so a server is not required to provide information the client is not authorized to see. This property is NOT lockable with respect to write locks (Section 7).
+        /// </summary>
+        /// <param name="responsedoc"></param>
+        /// <returns></returns>
+        private static XmlNode SupportedLocks(ref XmlDocument responsedoc)
+        {
+            XmlNode node = new WebDavProperty("supportedlock").ToXmlElement(responsedoc);
+
+            XmlNode lockentry = new WebDavProperty("lockentry").ToXmlElement(responsedoc);
+            node.AppendChild(lockentry);
+
+            XmlNode lockscope = new WebDavProperty("lockscope").ToXmlElement(responsedoc);
+            lockentry.AppendChild(lockscope);
+
+            XmlNode exclusive = new WebDavProperty("exclusive").ToXmlElement(responsedoc);
+            lockscope.AppendChild(exclusive);
+
+            XmlNode locktype = new WebDavProperty("locktype").ToXmlElement(responsedoc);
+            lockentry.AppendChild(locktype);
+
+            XmlNode write = new WebDavProperty("write").ToXmlElement(responsedoc);
+            locktype.AppendChild(write);
+
+            XmlNode lockentry1 = new WebDavProperty("lockentry").ToXmlElement(responsedoc);
+            node.AppendChild(lockentry1);
+
+            XmlNode lockscope1 = new WebDavProperty("lockscope").ToXmlElement(responsedoc);
+            lockentry1.AppendChild(lockscope1);
+
+            XmlNode shared = new WebDavProperty("shared").ToXmlElement(responsedoc);
+            lockscope1.AppendChild(shared);
+
+            XmlNode locktype1 = new WebDavProperty("locktype").ToXmlElement(responsedoc);
+            lockentry1.AppendChild(locktype1);
+
+            XmlNode write1 = new WebDavProperty("write").ToXmlElement(responsedoc);
+            locktype1.AppendChild(write1);
+
+            return node;
+        }
+
+        /// <summary>
+        /// Returns the XML Format according to RFC
+        /// Name:
+        ///    lockdiscovery
+        /// Purpose:
+        ///     Describes the active locks on a resource
+        /// Protected:
+        ///     MUST be protected. Clients change the list of locks through LOCK and UNLOCK, not through PROPPATCH.
+        /// COPY/MOVE behavior:
+        ///     The value of this property depends on the lock state of the destination, not on the locks of the source resource. Recall 
+        ///     that locks are not moved in a MOVE operation.
+        /// Description:
+        ///     Returns a listing of who has a lock, what type of lock he has, the timeout type and the time remaining on the timeout, 
+        ///     and the associated lock token. Owner information MAY be omitted if it is considered sensitive. If there are no locks, but 
+        ///     the server supports locks, the property will be present but contain zero 'activelock' elements. If there are one or more locks,
+        ///     an 'activelock' element appears for each lock on the resource. This property is NOT lockable with respect to write locks (Section 7).
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="responsedoc"></param>
+        /// <returns></returns>
+        private static XmlNode LockDiscovery(Uri path, ref XmlDocument responsedoc)
+        {
+            XmlNode node = new WebDavProperty("lockdiscovery").ToXmlElement(responsedoc);
+            foreach (var ilock in WebDavStoreItemLock.GetLocks(path))
+            {
+                XmlNode activelock = new WebDavProperty("activelock").ToXmlElement(responsedoc);
+                node.AppendChild(activelock);
+
+                XmlNode locktype = new WebDavProperty("locktype").ToXmlElement(responsedoc);
+                activelock.AppendChild(locktype);
+
+                XmlNode locktypeitem = new WebDavProperty(ilock.LockType.ToString().ToLower()).ToXmlElement(responsedoc);
+                locktype.AppendChild(locktypeitem);
+
+                XmlNode lockscope = new WebDavProperty("lockscope").ToXmlElement(responsedoc);
+                activelock.AppendChild(lockscope);
+
+                XmlNode lockscopeitem = new WebDavProperty(ilock.LockScope.ToString().ToLower()).ToXmlElement(responsedoc);
+                lockscope.AppendChild(lockscopeitem);
+
+                XmlNode depth = new WebDavProperty("depth").ToXmlElement(responsedoc);
+                depth.InnerText = ilock.Depth.ToString(CultureInfo.InvariantCulture);
+                activelock.AppendChild(depth);
+
+                XmlNode owner = new WebDavProperty("owner").ToXmlElement(responsedoc);
+                owner.InnerText = ilock.Owner;
+                activelock.AppendChild(owner);
+
+                XmlNode timeout = new WebDavProperty("timeout").ToXmlElement(responsedoc);
+                timeout.InnerText = ilock.RequestedTimeout;
+                activelock.AppendChild(timeout);
+
+                XmlNode locktoken = new WebDavProperty("locktoken").ToXmlElement(responsedoc);
+                activelock.AppendChild(locktoken);
+
+                XmlNode tokenhref = new WebDavProperty("href").ToXmlElement(responsedoc);
+                tokenhref.InnerText = ilock.Token;
+                locktoken.AppendChild(tokenhref);
+
+                XmlNode lockroot = new WebDavProperty("lockroot").ToXmlElement(responsedoc);
+                activelock.AppendChild(lockroot);
+
+                XmlNode lockroothref = new WebDavProperty("href").ToXmlElement(responsedoc);
+                lockroothref.InnerText = ilock.Path.ToString();
+                lockroot.AppendChild(lockroothref);
+            }
+
+            return node;
         }
 
         #endregion

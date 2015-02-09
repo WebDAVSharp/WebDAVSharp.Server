@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace WebDAVSharp.Server.Stores.BaseClasses
 {
@@ -11,7 +12,7 @@ namespace WebDAVSharp.Server.Stores.BaseClasses
         #region Variables
 
         private readonly IWebDavStoreCollection _root;
-
+        
         #endregion
 
         #region Constructor

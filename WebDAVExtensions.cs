@@ -47,13 +47,13 @@ namespace WebDAVSharp.Server
         /// <param name="statusCode">The HTTP status code for the response.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
         /// <exception cref="ArgumentNullException"><paramref name="context" /> is <c>null</c>.</exception>
-        public static void SendSimpleResponse(this IHttpListenerContext context, HttpStatusCode statusCode = HttpStatusCode.OK)
+        public static void SendSimpleResponse(this IHttpListenerContext context, int statusCode = (int)HttpStatusCode.OK)
         {
             if (context == null)
                 throw new ArgumentNullException("context");
 
-            context.Response.StatusCode = (int)statusCode;
-            context.Response.StatusDescription = HttpWorkerRequest.GetStatusDescription((int)statusCode);
+            context.Response.StatusCode = statusCode;
+            context.Response.StatusDescription = HttpWorkerRequest.GetStatusDescription(statusCode);
             context.Response.Close();
         }
 
@@ -71,12 +71,14 @@ namespace WebDAVSharp.Server
         /// <exception cref="WebDavInternalServerException"><paramref name="uri" /> specifies a <see cref="Uri" /> that is not known to the <paramref name="server" />.</exception>
         public static Uri GetPrefixUri(this Uri uri, WebDavServer server)
         {
-            string url = uri.ToString();
-            foreach (
-                string prefix in
-                    server.Listener.Prefixes.Where(
-                        prefix => url.StartsWith(uri.ToString(), StringComparison.OrdinalIgnoreCase)))
-                return new Uri(prefix);
+
+                string url = uri.ToString();
+                foreach (
+                    string prefix in
+                        server.Listener.Prefixes.Where(
+                            prefix => url.StartsWith(uri.ToString(), StringComparison.OrdinalIgnoreCase)))
+                    return new Uri(prefix);
+           
             throw new WebDavInternalServerException("Unable to find correct server root");
         }
 

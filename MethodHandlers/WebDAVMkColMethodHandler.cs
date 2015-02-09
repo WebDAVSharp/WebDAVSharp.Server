@@ -60,7 +60,7 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             collection.CreateCollection(collectionName);
 
-            context.SendSimpleResponse(HttpStatusCode.Created);
+            context.SendSimpleResponse((int)HttpStatusCode.Created);
         }
 
         #endregion
