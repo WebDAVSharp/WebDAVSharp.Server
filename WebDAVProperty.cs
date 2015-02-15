@@ -7,6 +7,9 @@ namespace WebDAVSharp.Server
     /// </summary>
     internal class WebDavProperty
     {
+
+        #region Variables
+
         /// <summary>
         /// This class implements the core WebDAV server.
         /// </summary>
@@ -21,6 +24,10 @@ namespace WebDAVSharp.Server
         /// This class implements the core WebDAV server.
         /// </summary>
         public string Value;
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
         /// Standard constructor
@@ -67,6 +74,10 @@ namespace WebDAVSharp.Server
             Value = value;
             Namespace = ns;
         }
+
+        #endregion
+
+        #region Functions
 
         /// <summary>
         /// This class implements the core WebDAV server.
@@ -146,5 +157,29 @@ namespace WebDAVSharp.Server
             return element;
             // else, return XmlElement without namespace
         }
+
+        /// <summary>
+        /// reates an XmlElement from the current WebDAVProperty
+        /// </summary>
+        /// <param name="doc">The XmlDocument where a XmlElement is needed</param>
+        /// <returns>
+        /// The XmlElement of the current WebDAVProperty object
+        /// </returns>
+        public XmlElement XmlToXmlElement(XmlDocument doc)
+        {
+            // if the DocumentElement is not null, return the XmlElement with namespace
+            if (doc.DocumentElement == null)
+                return doc.CreateElement(Name);
+            // Get the prefix of the namespace
+            string prefix = doc.DocumentElement.GetPrefixOfNamespace(Namespace);
+
+            // Create the element
+            XmlElement element = doc.CreateElement(prefix, Name, Namespace);
+            element.InnerXml = Value;
+            return element;
+            // else, return XmlElement without namespace
+        }
+        #endregion
+
     }
 }
