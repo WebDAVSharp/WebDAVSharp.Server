@@ -76,7 +76,7 @@ namespace WebDAVSharp.Server
                 foreach (
                     string prefix in
                         server.Listener.Prefixes.Where(
-                            prefix => url.StartsWith(uri.ToString(), StringComparison.OrdinalIgnoreCase)))
+                            prefix => url.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
                     return new Uri(prefix);
            
             throw new WebDavInternalServerException("Unable to find correct server root");
