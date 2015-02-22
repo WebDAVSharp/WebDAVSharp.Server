@@ -71,13 +71,26 @@ namespace WebDAVSharp.Server
         /// <exception cref="WebDavInternalServerException"><paramref name="uri" /> specifies a <see cref="Uri" /> that is not known to the <paramref name="server" />.</exception>
         public static Uri GetPrefixUri(this Uri uri, WebDavServer server)
         {
+            string url = uri.ToString();
 
-                string url = uri.ToString();
-                foreach (
-                    string prefix in
-                        server.Listener.Prefixes.Where(
-                            prefix => url.StartsWith(uri.ToString(), StringComparison.OrdinalIgnoreCase)))
-                    return new Uri(prefix);
+            string exactPrefix = server.Listener.Prefixes
+                .FirstOrDefault(item => url.StartsWith(item, StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrEmpty(exactPrefix))
+            {
+                return new Uri(exactPrefix);
+            }
+
+            string wildcardUrl = new UriBuilder(uri) { Host = "WebDAVSharpSpecialHostTag" }
+                .ToString().Replace("WebDAVSharpSpecialHostTag", "*");
+
+            string wildcardPrefix = server.Listener.Prefixes
+                .FirstOrDefault(item => wildcardUrl.StartsWith(item, StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrEmpty(wildcardPrefix))
+            {
+                return new Uri(wildcardPrefix.Replace("://*", string.Format("://{0}", uri.Host)));
+            }
            
             throw new WebDavInternalServerException("Unable to find correct server root");
         }
