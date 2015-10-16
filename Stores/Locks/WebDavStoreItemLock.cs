@@ -3,65 +3,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Xml;
-
+using WebDAVSharp.Server.Stores.Locks.Enums;
+using WebDAVSharp.Server.Stores.Locks.Interfaces;
 
 namespace WebDAVSharp.Server.Stores.Locks
 {
     /// <summary>
-    /// This class provides the locking functionality.
-    /// 
+    ///     This class provides the locking functionality.
     /// </summary>
-    public class WebDavStoreItemLock
+    public class WebDavStoreItemLock : WebDavStoreItemLockBase
     {
-
-        #region Variables
         /// <summary>
-        /// Allow Objects to be checked out forever
         /// </summary>
-        internal static bool AllowInfiniteCheckouts = false;
+        public Dictionary<string, List<IWebDavStoreItemLockInstance>> ObjectLocks = new Dictionary<string, List<IWebDavStoreItemLockInstance>>();
 
         /// <summary>
-        /// Max amount of seconds a item can be checkout for.
         /// </summary>
-        internal static long MaxCheckOutSeconds = long.MaxValue;
-
-        /// <summary>
-        /// Used to store the locks per URI
-        /// </summary>
-        private static readonly Dictionary<Uri, List<WebDaveStoreItemLockInstance>> ObjectLocks = new Dictionary<Uri, List<WebDaveStoreItemLockInstance>>();
-
-        #endregion
-
-        /// <summary>
-        /// This function removes any expired locks for the path.
-        /// </summary>
-        /// <param name="path"></param>
-        private static void CleanLocks(Uri path)
+        /// <param name="storeItem"></param>
+        public void CleanLocks(IWebDavStoreItem storeItem)
         {
             lock (ObjectLocks)
             {
-                if (!ObjectLocks.ContainsKey(path))
+                if (!ObjectLocks.ContainsKey(storeItem.ItemPath))
                     return;
                 foreach (
-                    WebDaveStoreItemLockInstance ilock in ObjectLocks[path].ToList()
-                        .Where(ilock => ilock.ExpirationDate != null && (DateTime)ilock.ExpirationDate < DateTime.Now)
+                    IWebDavStoreItemLockInstance ilock in ObjectLocks[storeItem.ItemPath].ToList()
+                        .Where(ilock => ilock.ExpirationDate != null && (DateTime) ilock.ExpirationDate < DateTime.Now)
                     )
-                    ObjectLocks[path].Remove(ilock);
+                    ObjectLocks[storeItem.ItemPath].Remove(ilock);
             }
         }
 
         /// <summary>
-        /// This function will refresh an existing lock.
+        ///     This function will refresh an existing lock.
         /// </summary>
-        /// <param name="path">Target URI to the file or folder </param>
+        /// <param name="storeItem">Target URI to the file or folder </param>
         /// <param name="locktoken">The token issued when the lock was established</param>
         /// <param name="requestedlocktimeout">The requested timeout</param>
-        /// <param name="requestDocument">Output parameter, returns the Request document that was used when the lock was established.</param>
+        /// <param name="requestDocument">
+        ///     Output parameter, returns the Request document that was used when the lock was
+        ///     established.
+        /// </param>
         /// <returns></returns>
-        public static int RefreshLock(Uri path, string locktoken, ref string requestedlocktimeout,
-            out XmlDocument requestDocument)
+        public override int RefreshLock(IWebDavStoreItem storeItem, Guid? locktoken, double? requestedlocktimeout, out XmlDocument requestDocument)
         {
-            CleanLocks(path);
+            CleanLocks(storeItem);
             //Refreshing an existing lock
 
             //If a lock doesn't exist then lets just reply with a Precondition Failed.
@@ -70,30 +56,31 @@ namespace WebDAVSharp.Server.Stores.Locks
             //did not fall within the scope of the lock identified by the token. The lock may have a scope that does not 
             //include the Request-URI, or the lock could have disappeared, or the token may be invalid.
             requestDocument = null;
-            if (!ObjectLocks.ContainsKey(path))
-                return 412;
 
-            string tmptoken = locktoken;
             lock (ObjectLocks)
             {
-                WebDaveStoreItemLockInstance ilock = ObjectLocks[path].FirstOrDefault(d => (d.Token == tmptoken));
+                IWebDavStoreItemLockInstance ilock = ObjectLocks[storeItem.ItemPath].FirstOrDefault(d => (d.Token == locktoken));
                 if (ilock == null)
                 {
+#if DEBUG
                     WebDavServer.Log.Debug("Lock Refresh Failed , Lock does not exist.");
+#endif
                     return 412;
                 }
+#if DEBUG
                 WebDavServer.Log.Debug("Lock Refresh Successful.");
-                ilock.RefreshLock(ref requestedlocktimeout);
+#endif
+                ilock.RefreshLock(requestedlocktimeout);
                 requestDocument = ilock.RequestDocument;
 
-                return (int)HttpStatusCode.OK;
+                return (int) HttpStatusCode.OK;
             }
         }
 
         /// <summary>
-        /// Locks the request Path.
+        ///     Locks the request Path.
         /// </summary>
-        /// <param name="path">URI to the item to be locked</param>
+        /// <param name="storeItem">URI to the item to be locked</param>
         /// <param name="lockscope">The lock Scope used for locking</param>
         /// <param name="locktype">The lock Type used for locking</param>
         /// <param name="lockowner">The owner of the lock</param>
@@ -102,12 +89,16 @@ namespace WebDAVSharp.Server.Stores.Locks
         /// <param name="requestDocument">the Request Document</param>
         /// <param name="depth">How deep to lock, 0,1, or infinity</param>
         /// <returns></returns>
-        public static int Lock(Uri path, WebDavLockScope lockscope, WebDavLockType locktype, string lockowner,
-            ref string requestedlocktimeout, out string locktoken, XmlDocument requestDocument, int depth)
+        public override int Lock(IWebDavStoreItem storeItem, WebDavLockScope lockscope, WebDavLockType locktype, string lockowner,
+            double? requestedlocktimeout, out Guid? locktoken, XmlDocument requestDocument, int depth)
         {
-            CleanLocks(path);
+            CleanLocks(storeItem);
+#if DEBUG
             WebDavServer.Log.Info("Lock Requested Timeout:" + requestedlocktimeout);
-            locktoken = string.Empty;
+#endif
+            locktoken = null;
+            Guid tmpLockToken = Guid.NewGuid();
+
             lock (ObjectLocks)
             {
                 /*
@@ -125,35 +116,45 @@ namespace WebDAVSharp.Server.Stores.Locks
 
                 //if ObjectLocks doesn't contain the path, then this is a new lock and regardless
                 //of whether it is Exclusive or Shared it is successful.
-                if (!ObjectLocks.ContainsKey(path))
+                if (!ObjectLocks.ContainsKey(storeItem.ItemPath))
                 {
-                    ObjectLocks.Add(path, new List<WebDaveStoreItemLockInstance>());
-
-                    ObjectLocks[path].Add(new WebDaveStoreItemLockInstance(path, lockscope, locktype, lockowner,
-                        ref requestedlocktimeout, ref locktoken,
-                        requestDocument, depth));
-
+                    ObjectLocks.Add(storeItem.ItemPath, new List<IWebDavStoreItemLockInstance>());
+                    ObjectLocks[storeItem.ItemPath].Add(new WebDavStoreItemLockInstance(storeItem.ItemPath, lockscope, locktype, lockowner, requestedlocktimeout, tmpLockToken, requestDocument, depth, this));
+                    locktoken = tmpLockToken;
+#if DEBUG
                     WebDavServer.Log.Debug("Created New Lock (" + lockscope + "), URI had no locks.  Timeout:" +
                                            requestedlocktimeout);
-
-                    return (int)HttpStatusCode.OK;
+#endif
+                    return (int) HttpStatusCode.OK;
+                }
+                if (ObjectLocks[storeItem.ItemPath].Count == 0)
+                {
+                    ObjectLocks[storeItem.ItemPath].Add(new WebDavStoreItemLockInstance(storeItem.ItemPath, lockscope, locktype, lockowner, requestedlocktimeout, tmpLockToken, requestDocument, depth, this));
+                    locktoken = tmpLockToken;
+                    return (int) HttpStatusCode.OK;
                 }
 
                 //The fact that ObjectLocks contains this URI means that there is already a lock on this object,
                 //This means the lock fails because you can only have 1 exclusive lock.
-                if (lockscope == WebDavLockScope.Exclusive)
+                switch (lockscope)
                 {
+                    case WebDavLockScope.Exclusive:
+#if DEBUG
                     WebDavServer.Log.Debug("Lock Creation Failed (Exclusive), URI already has a lock.");
-                    return 423;
+#endif
+                        return 423;
+                    case WebDavLockScope.Shared:
+                        if (ObjectLocks[storeItem.ItemPath].Any(itemLock => itemLock.LockScope == WebDavLockScope.Exclusive))
+                        {
+#if DEBUG
+                        WebDavServer.Log.Debug("Lock Creation Failed (Shared), URI has exclusive lock.");
+#endif
+                            return 423;
+                        }
+                        break;
                 }
 
                 //If the scope is shared and all other locks on this uri are shared we are ok, otherwise we fail.
-                if (lockscope == WebDavLockScope.Shared)
-                    if (ObjectLocks[path].Any(itemLock => itemLock.LockScope == WebDavLockScope.Exclusive))
-                    {
-                        WebDavServer.Log.Debug("Lock Creation Failed (Shared), URI has exclusive lock.");
-                        return 423;
-                    }
                 //423 (Locked), potentially with 'no-conflicting-lock' precondition code - 
                 //There is already a lock on the resource that is not compatible with the 
                 //requested lock (see lock compatibility table above).
@@ -162,66 +163,73 @@ namespace WebDAVSharp.Server.Stores.Locks
 
                 #region Create New Lock
 
-                ObjectLocks[path].Add(new WebDaveStoreItemLockInstance(path, lockscope, locktype, lockowner,
-                    ref requestedlocktimeout, ref locktoken,
-                    requestDocument, depth));
-
+                ObjectLocks[storeItem.ItemPath].Add(new WebDavStoreItemLockInstance(storeItem.ItemPath, lockscope, locktype, lockowner, requestedlocktimeout, tmpLockToken, requestDocument, depth, this));
+                locktoken = tmpLockToken;
+#if DEBUG
                 WebDavServer.Log.Debug("Created New Lock (" + lockscope + "), URI had no locks.  Timeout:" +
                                        requestedlocktimeout);
+#endif
 
                 #endregion
 
-                return (int)HttpStatusCode.OK;
+                return (int) HttpStatusCode.OK;
             }
         }
 
         /// <summary>
-        /// Unlocks the URI passed if the token matches a lock token in use.
+        ///     Unlocks the URI passed if the token matches a lock token in use.
         /// </summary>
-        /// <param name="path">URI to resource</param>
+        /// <param name="storeItem">URI to resource</param>
         /// <param name="locktoken">Token used to lock.</param>
         /// <param name="owner">Owner.</param>
         /// <returns></returns>
-        public static int UnLock(Uri path, string locktoken, string owner)
+        public override int UnLock(IWebDavStoreItem storeItem, Guid? locktoken, string owner)
         {
-            CleanLocks(path);
-            if (string.IsNullOrEmpty(locktoken))
+            CleanLocks(storeItem);
+            if (locktoken == null)
             {
+#if DEBUG
                 WebDavServer.Log.Debug("Unlock failed, No Token!.");
-                return (int)HttpStatusCode.BadRequest;
+#endif
+                return (int) HttpStatusCode.BadRequest;
             }
 
             lock (ObjectLocks)
             {
-                if (!ObjectLocks.ContainsKey(path))
+                if (!ObjectLocks.ContainsKey(storeItem.ItemPath))
                 {
+#if DEBUG
                     WebDavServer.Log.Debug("Unlock failed, Lock does not exist!.");
-                    return (int)HttpStatusCode.Conflict;
+#endif
+                    return (int) HttpStatusCode.Conflict;
                 }
 
-                WebDaveStoreItemLockInstance ilock = ObjectLocks[path].FirstOrDefault(d => d.Token == locktoken && d.Owner == owner);
+                WebDavStoreItemLockInstance ilock = (WebDavStoreItemLockInstance) ObjectLocks[storeItem.ItemPath].FirstOrDefault(d => d.Token == locktoken && d.Owner == owner);
                 if (ilock == null)
-                    return (int)HttpStatusCode.Conflict;
+                    return (int) HttpStatusCode.Conflict;
                 //Remove the lock
-                ObjectLocks[path].Remove(ilock);
+                ObjectLocks[storeItem.ItemPath].Remove(ilock);
 
                 //if there are no locks left of the uri then remove it from ObjectLocks.
-                if (ObjectLocks[path].Count == 0)
-                    ObjectLocks.Remove(path);
-
+                if (ObjectLocks[storeItem.ItemPath].Count == 0)
+                    ObjectLocks.Remove(storeItem.ItemPath);
+#if DEBUG
                 WebDavServer.Log.Debug("Unlock successful.");
-                return (int)HttpStatusCode.NoContent;
+#endif
+                return (int) HttpStatusCode.NoContent;
             }
         }
 
         /// <summary>
-        /// Returns all the locks on the path
         /// </summary>
-        /// <param name="path">URI to resource</param>
+        /// <param name="storeItem"></param>
         /// <returns></returns>
-        public static List<WebDaveStoreItemLockInstance> GetLocks(Uri path)
+        public override List<IWebDavStoreItemLockInstance> GetLocks(IWebDavStoreItem storeItem)
         {
-            return ObjectLocks.ContainsKey(path) ? ObjectLocks[path].ToList() : new List<WebDaveStoreItemLockInstance>();
+            lock (ObjectLocks)
+            {
+                return ObjectLocks.ContainsKey(storeItem.ItemPath) ? ObjectLocks[storeItem.ItemPath].ToList() : new List<IWebDavStoreItemLockInstance>();
+            }
         }
     }
 }

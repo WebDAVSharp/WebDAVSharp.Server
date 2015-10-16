@@ -1,27 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WebDAVSharp.Server
+﻿namespace WebDAVSharp.Server
 {
-
     /// <summary>
-    /// HTTP Authorization Types
+    ///     HTTP Authorization Types
     /// </summary>
     public enum AuthType
     {
         /// <summary>
-        /// Clear Text
+        ///     Clear Text
         /// </summary>
         Basic,
+
         /// <summary>
-        /// Negotiate
+        ///     Negotiate
         /// </summary>
         Negotiate,
+
         /// <summary>
-        /// Anonymous
+        ///     Anonymous
         /// </summary>
         Anonymous
     }
