@@ -4,18 +4,16 @@ using System.Net;
 namespace WebDAVSharp.Server.Adapters
 {
     /// <summary>
-    /// This 
-    /// <see cref="IHttpListenerContext" /> implementation wraps around a
-    /// <see cref="HttpListenerContext" /> instance.
+    ///     This
+    ///     <see cref="IHttpListenerContext" /> implementation wraps around a
+    ///     <see cref="HttpListenerContext" /> instance.
     /// </summary>
-    internal sealed class HttpListenerContextAdapter : IHttpListenerContext, IAdapter<HttpListenerContext>
+    public sealed class HttpListenerContextAdapter : IHttpListenerContext
     {
-        private readonly HttpListenerContext _context;
-        private readonly HttpListenerRequestAdapter _request;
-        private readonly HttpListenerResponseAdapter _response;
+        #region Public Functions
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpListenerContextAdapter" /> class.
+        ///     Initializes a new instance of the <see cref="HttpListenerContextAdapter" /> class.
         /// </summary>
         /// <param name="context">The <see cref="HttpListenerContext" /> to adapt for WebDAV#.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
@@ -23,47 +21,42 @@ namespace WebDAVSharp.Server.Adapters
         public HttpListenerContextAdapter(HttpListenerContext context)
         {
             if (context == null)
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
 
-            _context = context;
+            AdaptedInstance = context;
             _request = new HttpListenerRequestAdapter(context.Request);
             _response = new HttpListenerResponseAdapter(context.Response);
         }
 
+        #endregion
+
+        #region Private Variables
+
+        private readonly HttpListenerRequestAdapter _request;
+        private readonly HttpListenerResponseAdapter _response;
+
+        #endregion
+
+        #region Properties
+
         /// <summary>
-        /// Gets the internal instance that was adapted for WebDAV#.
+        ///     Gets the internal instance that was adapted for WebDAV#.
         /// </summary>
         /// <value>
-        /// The adapted instance.
+        ///     The adapted instance.
         /// </value>
-        public HttpListenerContext AdaptedInstance
-        {
-            get
-            {
-                return _context;
-            }
-        }
+        public HttpListenerContext AdaptedInstance { get; }
 
         /// <summary>
-        /// Gets the <see cref="IHttpListenerRequest" /> request adapter.
+        ///     Gets the <see cref="IHttpListenerRequest" /> request adapter.
         /// </summary>
-        public IHttpListenerRequest Request
-        {
-            get
-            {
-                return _request;
-            }
-        }
+        public IHttpListenerRequest Request => _request;
 
         /// <summary>
-        /// Gets the <see cref="IHttpListenerResponse" /> response adapter.
+        ///     Gets the <see cref="IHttpListenerResponse" /> response adapter.
         /// </summary>
-        public IHttpListenerResponse Response
-        {
-            get
-            {
-                return _response;
-            }
-        }
+        public IHttpListenerResponse Response => _response;
+
+        #endregion
     }
 }

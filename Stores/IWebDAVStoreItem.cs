@@ -3,90 +3,101 @@ using System;
 namespace WebDAVSharp.Server.Stores
 {
     /// <summary>
-    /// This interface must be implemented by classes that will function as a store item,
-    /// which is either a document (
-    /// <see cref="IWebDavStoreDocument" />) or a
-    /// collection of documents (
-    /// <see cref="IWebDavStoreCollection" />.)
+    ///     This interface must be implemented by classes that will function as a store item,
+    ///     which is either a document (
+    ///     <see cref="IWebDavStoreDocument" />) or a
+    ///     collection of documents (
+    ///     <see cref="IWebDavStoreCollection" />.)
     /// </summary>
     public interface IWebDavStoreItem
     {
         /// <summary>
-        /// Gets the parent <see cref="IWebDavStoreCollection" /> that owns this <see cref="IWebDavStoreItem" />.
         /// </summary>
-        /// <value>
-        /// The parent collection.
-        /// </value>
-        IWebDavStoreCollection ParentCollection
-        {
-            get;
-        }
+        Uri Href { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of this <see cref="IWebDavStoreItem" />.
+        ///     Gets the size of the document in bytes.
         /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        string Name
-        {
-            get;
-            set;
-        }
+        long Size { get; }
 
         /// <summary>
-        /// Gets the ItemPath of this <see cref="IWebDavStoreItem" />.
+        ///     Gets the mime type of <see cref="IWebDavStoreItem" />.
         /// </summary>
         /// <value>
-        /// The item path.
+        ///     The type of the MIME.
         /// </value>
-        string ItemPath
-        {
-            get;
-        }
+        string MimeType { get; }
 
         /// <summary>
-        /// Gets if this <see cref="IWebDavStoreItem" /> is a collection.
+        ///     Gets the etag of this <see cref="IWebDavStoreItem" />.
         /// </summary>
         /// <value>
-        /// <c>true</c> if this instance is collection; otherwise, <c>false</c>.
+        ///     The etag.
         /// </value>
-        bool IsCollection
-        {
-            get;
-        }
+        string Etag { get; }
 
         /// <summary>
-        /// Gets the creation date of this <see cref="IWebDavStoreItem" />.
         /// </summary>
-        /// <value>
-        /// The creation date.
-        /// </value>
-        DateTime CreationDate
-        {
-            get;
-        }
+        IWebDavStore Store { get; }
 
         /// <summary>
-        /// Gets the modification date of this <see cref="IWebDavStoreItem" />.
+        ///     Gets the parent <see cref="IWebDavStoreCollection" /> that owns this <see cref="IWebDavStoreItem" />.
         /// </summary>
         /// <value>
-        /// The modification date.
+        ///     The parent collection.
         /// </value>
-        DateTime ModificationDate
-        {
-            get;
-        }
+        IWebDavStoreCollection ParentCollection { get; }
 
         /// <summary>
-        /// Gets the hidden state of this <see cref="IWebDavStoreItem" />.
+        ///     Gets or sets the name of this <see cref="IWebDavStoreItem" />.
         /// </summary>
         /// <value>
-        /// 1 if hidden, 0 if not.
+        ///     The name.
         /// </value>
-        int Hidden
-        {
-            get;
-        }
+        string Name { get; set; }
+
+        /// <summary>
+        ///     Gets the ItemPath of this <see cref="IWebDavStoreItem" />.
+        /// </summary>
+        /// <value>
+        ///     The item path.
+        /// </value>
+        string ItemPath { get; }
+
+        /// <summary>
+        ///     Gets if this <see cref="IWebDavStoreItem" /> is a collection.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is collection; otherwise, <c>false</c>.
+        /// </value>
+        bool IsCollection { get; }
+
+        /// <summary>
+        ///     Gets the creation date of this <see cref="IWebDavStoreItem" />.
+        /// </summary>
+        /// <value>
+        ///     The creation date.
+        /// </value>
+        DateTime CreationDate { get; }
+
+        /// <summary>
+        ///     Gets the modification date of this <see cref="IWebDavStoreItem" />.
+        /// </summary>
+        /// <value>
+        ///     The modification date.
+        /// </value>
+        DateTime ModificationDate { get; }
+
+        /// <summary>
+        ///     This is a guid uniquely identifying the store item.
+        /// </summary>
+        /// <returns></returns>
+        Guid GetRepl_uId();
+
+        /// <summary>
+        ///     Returns the file info.
+        /// </summary>
+        /// <returns></returns>
+        IWebDavFileInfo GetFileInfo();
     }
 }

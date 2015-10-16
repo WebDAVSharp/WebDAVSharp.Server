@@ -1,28 +1,49 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using WebDAVSharp.Server.Adapters;
 using WebDAVSharp.Server.Exceptions;
 using WebDAVSharp.Server.Stores;
+using static System.String;
 
 namespace WebDAVSharp.Server.MethodHandlers
 {
     /// <summary>
-    /// This is the base class for <see cref="IWebDavMethodHandler" /> implementations.
+    ///     This is the base class for <see cref="IWebDavMethodHandler" /> implementations.
     /// </summary>
-    internal abstract class WebDavMethodHandlerBase
-        {
+    public abstract class WebDavMethodHandlerBase : IWebDavMethodHandler
+    {
+        #region Variables
+
         private const int DepthInfinity = -1;
 
+        //public WindowsIdentity UserIdentity;
+
+        #endregion
+
         /// <summary>
-        /// Get the parent collection from the requested
-        /// <see cref="Uri" />.
-        /// <see cref="WebDavException" /> 409 Conflict possible.
+        /// </summary>
+        public abstract IEnumerable<string> Names { get; }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="server"></param>
+        /// <param name="context"></param>
+        /// <param name="store"></param>
+        public abstract void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store);
+
+        #region Static Functions
+
+        /// <summary>
+        ///     Get the parent collection from the requested
+        ///     <see cref="Uri" />.
+        ///     <see cref="WebDavException" /> 409 Conflict possible.
         /// </summary>
         /// <param name="server">The <see cref="WebDavServer" /> through which the request came in from the client.</param>
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         /// <param name="childUri">The <see cref="Uri" /> object containing the specific location of the child</param>
         /// <returns>
-        /// The parrent collection as an <see cref="IWebDavStoreCollection" />
+        ///     The parrent collection as an <see cref="IWebDavStoreCollection" />
         /// </returns>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException"></exception>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavConflictException">
@@ -32,64 +53,40 @@ namespace WebDAVSharp.Server.MethodHandlers
         public static IWebDavStoreCollection GetParentCollection(WebDavServer server, IWebDavStore store, Uri childUri)
         {
             Uri parentCollectionUri = childUri.GetParentUri();
-            IWebDavStoreCollection collection;
-            try
-            {
-                collection = parentCollectionUri.GetItem(server, store) as IWebDavStoreCollection;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                throw  new WebDavUnauthorizedException();
-            }
-            catch(WebDavNotFoundException)
-            {
-                throw new WebDavConflictException();
-            }
-            if (collection == null)
-                throw new WebDavConflictException();
-
-            return collection;
+            return parentCollectionUri.GetItem(server, store) as IWebDavStoreCollection;
         }
 
         /// <summary>
-        /// Get the item in the collection from the requested
-        /// <see cref="Uri" />.
-        /// <see cref="WebDavException" /> 409 Conflict possible.
+        ///     Get the item in the collection from the requested
+        ///     <see cref="Uri" />.
+        ///     <see cref="WebDavException" /> 409 Conflict possible.
         /// </summary>
         /// <param name="collection">The parent collection as a <see cref="IWebDavStoreCollection" /></param>
         /// <param name="childUri">The <see cref="Uri" /> object containing the specific location of the child</param>
         /// <returns>
-        /// The <see cref="IWebDavStoreItem" /> from the <see cref="IWebDavStoreCollection" />
+        ///     The <see cref="IWebDavStoreItem" /> from the <see cref="IWebDavStoreCollection" />
         /// </returns>
-        /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException">If user is not authorized to get access to the item</exception>
+        /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavUnauthorizedException">
+        ///     If user is not authorized to get access to
+        ///     the item
+        /// </exception>
         /// <exception cref="WebDAVSharp.Server.Exceptions.WebDavNotFoundException">If item not found.</exception>
         public static IWebDavStoreItem GetItemFromCollection(IWebDavStoreCollection collection, Uri childUri)
         {
-            IWebDavStoreItem item;
-            try
-            {
-                item = collection.GetItemByName(Uri.UnescapeDataString(childUri.Segments.Last().TrimEnd('/', '\\')));
-            }
-            catch (UnauthorizedAccessException)
-            {
-                throw new WebDavUnauthorizedException();
-            }
-            catch (WebDavNotFoundException)
-            {
-                throw new WebDavNotFoundException();
-            }
+            IWebDavStoreItem item = collection.GetItemByName(Uri.UnescapeDataString(childUri.Segments.Last().TrimEnd('/', '\\')));
             if (item == null)
                 throw new WebDavNotFoundException();
+            item.Href = childUri;
 
             return item;
         }
 
         /// <summary>
-        /// Gets the Depth header : 0, 1 or infinity
+        ///     Gets the Depth header : 0, 1 or infinity
         /// </summary>
         /// <param name="request">The <see cref="IHttpListenerContext" /> with the response included</param>
         /// <returns>
-        /// The values 0, 1 or -1 (for infinity)
+        ///     The values 0, 1 or -1 (for infinity)
         /// </returns>
         public static int GetDepthHeader(IHttpListenerRequest request)
         {
@@ -98,7 +95,7 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             // check if the string is valid or not infinity
             // if so, try to parse it to an int
-            if (String.IsNullOrEmpty(depth) || depth.Equals("infinity"))
+            if (IsNullOrEmpty(depth) || depth.Equals("infinity"))
                 return DepthInfinity;
             int value;
             if (!int.TryParse(depth, out value))
@@ -110,10 +107,10 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         /// <summary>
-        /// Gets the Overwrite header : T or F
+        ///     Gets the Overwrite header : T or F
         /// </summary>
-        /// <param name="request">The <see cref="IHttpListenerRequest"/> has the header included</param>
-        /// <returns>The <see cref="bool"/> true if overwrite, false if no overwrite</returns>
+        /// <param name="request">The <see cref="IHttpListenerRequest" /> has the header included</param>
+        /// <returns>The <see cref="bool" /> true if overwrite, false if no overwrite</returns>
         public static bool GetOverwriteHeader(IHttpListenerRequest request)
         {
             // get the value of the Overwrite header as a string
@@ -124,40 +121,24 @@ namespace WebDAVSharp.Server.MethodHandlers
             // else, return false
         }
 
-        /// <summary>
-        /// Gets the Timeout header : Second-number
-        /// </summary>
-        /// <param name="request">The request with the request included</param>
-        /// <returns>The value of the Timeout header as a string</returns>
-        public static string GetTimeoutHeader(IHttpListenerRequest request)
-        {
-            // get the value of the timeout header as a string
-            string timeout = request.Headers["Timeout"];
-
-            // check if the string is valid or not infinity
-            // if so, try to parse it to an int
-            if (!String.IsNullOrEmpty(timeout) && !timeout.Equals("infinity") &&
-                !timeout.Equals("Infinite, Second-4100000000"))
-                return timeout;
-            // else, return the timeout value as if it was requested to be 4 days
-            return "Second-345600";
-        }
 
         /// <summary>
-        /// Gets the Destination header as an URI
+        ///     Gets the Destination header as an URI
         /// </summary>
-        /// <param name="request">The <see cref="IHttpListenerRequest"/> has the header included</param>
-        /// <returns>The <see cref="Uri"/> containing the destination</returns>
+        /// <param name="request">The <see cref="IHttpListenerRequest" /> has the header included</param>
+        /// <returns>The <see cref="Uri" /> containing the destination</returns>
         public static Uri GetDestinationHeader(IHttpListenerRequest request)
         {
             // get the value of the Destination header as a string
             string destinationUri = request.Headers["Destination"];
 
             // check if the string is valid 
-            if (!String.IsNullOrEmpty(destinationUri))
+            if (!IsNullOrEmpty(destinationUri))
                 return new Uri(destinationUri);
             // else, throw exception
             throw new WebDavConflictException();
         }
+
+        #endregion
     }
 }

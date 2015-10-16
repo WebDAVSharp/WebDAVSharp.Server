@@ -6,120 +6,94 @@ using System.Text;
 namespace WebDAVSharp.Server.Adapters
 {
     /// <summary>
-    /// This 
-    /// <see cref="IHttpListenerResponse" /> implementation wraps around a
-    /// <see cref="HttpListenerResponse" /> instance.
+    ///     This
+    ///     <see cref="IHttpListenerResponse" /> implementation wraps around a
+    ///     <see cref="HttpListenerResponse" /> instance.
     /// </summary>
     internal sealed class HttpListenerResponseAdapter : IHttpListenerResponse
     {
+        #region Private Variables
+
         private readonly HttpListenerResponse _response;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HttpListenerResponseAdapter" /> class.
-        /// </summary>
-        /// <param name="Response">The <see cref="HttpListenerResponse" /> to adapt for WebDAV#.</param>
-        /// <exception cref="System.ArgumentNullException">Response</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="Response" /> is <c>null</c>.</exception>
-        public HttpListenerResponseAdapter(HttpListenerResponse Response)
-        {
-        if (Response == null)
-            throw new ArgumentNullException("Response");
+        #endregion
 
-        _response = Response;
-        }
+        #region Properties
 
         /// <summary>
-        /// Gets the internal instance that was adapted for WebDAV#.
+        ///     Gets the internal instance that was adapted for WebDAV#.
         /// </summary>
         /// <value>
-        /// The adapted instance.
+        ///     The adapted instance.
         /// </value>
-        public HttpListenerResponse AdaptedInstance
-        {
-            get
-            {
-                return _response;
-            }
-        }
+        public HttpListenerResponse AdaptedInstance => _response;
 
         /// <summary>
-        /// Gets or sets the HTTP status code to be returned to the client.
+        ///     Gets or sets the HTTP status code to be returned to the client.
         /// </summary>
         public int StatusCode
         {
-            get
-            {
-                return _response.StatusCode;
-            }
+            get { return _response.StatusCode; }
 
-            set
-            {
-                _response.StatusCode = value;
-            }
+            set { _response.StatusCode = value; }
         }
 
         /// <summary>
-        /// Gets or sets a text description of the HTTP <see cref="StatusCode">status code</see> returned to the client.
+        ///     Gets or sets a text description of the HTTP <see cref="StatusCode">status code</see> returned to the client.
         /// </summary>
         public string StatusDescription
         {
-            get
-            {
-                return _response.StatusDescription;
-            }
+            get { return _response.StatusDescription; }
 
-            set
-            {
-                _response.StatusDescription = value ?? string.Empty;
-            }
+            set { _response.StatusDescription = value ?? string.Empty; }
         }
 
         /// <summary>
-        /// Gets a <see cref="Stream" /> object to which a response can be written.
+        ///     Gets a <see cref="Stream" /> object to which a response can be written.
         /// </summary>
-        public Stream OutputStream
-        {
-            get
-            {
-                return _response.OutputStream;
-            }
-        }
+        public Stream OutputStream => _response.OutputStream;
 
         /// <summary>
-        /// Gets or sets the <see cref="Encoding" /> for this response's <see cref="OutputStream" />.
+        ///     Gets or sets the <see cref="Encoding" /> for this response's <see cref="OutputStream" />.
         /// </summary>
         public Encoding ContentEncoding
         {
-            get
-            {
-                return _response.ContentEncoding;
-            }
+            get { return _response.ContentEncoding; }
 
-            set
-            {
-                _response.ContentEncoding = value;
-            }
+            set { _response.ContentEncoding = value; }
         }
 
         /// <summary>
-        /// Gets or sets the number of bytes in the body data included in the response.
+        ///     Gets or sets the number of bytes in the body data included in the response.
         /// </summary>
         public long ContentLength64
         {
-            get
-            {
-                return _response.ContentLength64;
-            }
+            get { return _response.ContentLength64; }
 
-            set
-            {
-                _response.ContentLength64 = value;
-            }
+            set { _response.ContentLength64 = value; }
+        }
+
+        #endregion
+
+        #region Public Functions
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="HttpListenerResponseAdapter" /> class.
+        /// </summary>
+        /// <param name="response">The <see cref="HttpListenerResponse" /> to adapt for WebDAV#.</param>
+        /// <exception cref="System.ArgumentNullException">Response</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="response" /> is <c>null</c>.</exception>
+        public HttpListenerResponseAdapter(HttpListenerResponse response)
+        {
+            if (response == null)
+                throw new ArgumentNullException(nameof(response));
+
+            _response = response;
         }
 
         /// <summary>
-        /// Sends the response to the client and releases the resources held by the adapted
-        /// <see cref="HttpListenerResponse" /> instance.
+        ///     Sends the response to the client and releases the resources held by the adapted
+        ///     <see cref="HttpListenerResponse" /> instance.
         /// </summary>
         public void Close()
         {
@@ -127,7 +101,7 @@ namespace WebDAVSharp.Server.Adapters
         }
 
         /// <summary>
-        /// Appends a value to the specified HTTP header to be sent with the response.
+        ///     Appends a value to the specified HTTP header to be sent with the response.
         /// </summary>
         /// <param name="name">The name of the HTTP header to append the <paramref name="value" /> to.</param>
         /// <param name="value">The value to append to the <paramref name="name" /> header.</param>
@@ -135,5 +109,7 @@ namespace WebDAVSharp.Server.Adapters
         {
             _response.AppendHeader(name, value);
         }
+
+        #endregion
     }
 }
