@@ -1,57 +1,32 @@
 ﻿using System;
 using System.Net;
-using System.Runtime.ConstrainedExecution;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Security.Principal;
-using System.Threading;
-using Microsoft.Win32.SafeHandles;
 
 namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
 {
-    class HttpListenerAnyonymousAdapter : WebDavDisposableBase, IHttpListener, IAdapter<HttpListener>
+    internal class HttpListenerAnyonymousAdapter : WebDavDisposableBase, IHttpListener
     {
         public HttpListenerAnyonymousAdapter()
         {
             AdaptedInstance = new HttpListener
             {
                 AuthenticationSchemes = AuthenticationSchemes.Anonymous,
-                UnsafeConnectionNtlmAuthentication = false
+                UnsafeConnectionNtlmAuthentication = false,
+                TimeoutManager =
+                {
+                    RequestQueue = TimeSpan.FromMinutes(5),
+                    DrainEntityBody = TimeSpan.FromMinutes(5),
+                    EntityBody = TimeSpan.FromMinutes(5),
+                    HeaderWait = TimeSpan.FromMinutes(5),
+                    IdleConnection = TimeSpan.FromMinutes(5),
+                    MinSendBytesPerSecond = 300
+                },
+                IgnoreWriteExceptions = true
             };
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (AdaptedInstance.IsListening)
-                AdaptedInstance.Close();
-        }
-
-        public HttpListener AdaptedInstance
-        {
-            get;
-            private set;
-        }
-
-        public IHttpListenerContext GetContext(EventWaitHandle abortEvent)
-        {
-            if (abortEvent == null)
-                throw new ArgumentNullException("abortEvent");
-
-            IAsyncResult ar = AdaptedInstance.BeginGetContext(null, null);
-            int index = WaitHandle.WaitAny(new[] { abortEvent, ar.AsyncWaitHandle });
-            if (index != 1)
-                return null;
-            HttpListenerContext context = AdaptedInstance.EndGetContext(ar);
-            return new HttpListenerContextAdapter(context);
-        }
-
-        public HttpListenerPrefixCollection Prefixes
-        {
-            get
-            {
-                return AdaptedInstance.Prefixes;
-            }
-        }
+        public HttpListener AdaptedInstance { get; }
+        public HttpListenerPrefixCollection Prefixes => AdaptedInstance.Prefixes;
 
         public void Start()
         {
@@ -68,7 +43,10 @@ namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
             return WindowsIdentity.GetCurrent();
         }
 
-
-
+        protected override void Dispose(bool disposing)
+        {
+            if (AdaptedInstance.IsListening)
+                AdaptedInstance.Close();
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebDAVSharp.Server</RootNamespace>
     <AssemblyName>WebDAVSharp.Server</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -27,6 +27,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>bin\Debug\WebDAVSharp.Server.XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -46,7 +47,7 @@
     <Optimize>true</Optimize>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
@@ -60,15 +61,18 @@
     <AssemblyOriginatorKeyFile>..\Lasse V. Karlsen.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging">
-      <HintPath>packages\Common.Logging.2.2.0\lib\net40\Common.Logging.dll</HintPath>
+    <Reference Include="Common.Logging, Version=3.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.2.0\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Common.Logging.Core">
-      <HintPath>packages\Common.Logging.Core.2.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
+    <Reference Include="Common.Logging.Core, Version=3.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -106,10 +110,20 @@
     <Compile Include="MethodHandlers\WebDavProppatchMethodHandler.cs" />
     <Compile Include="MethodHandlers\WebDavPutMethodHandler.cs" />
     <Compile Include="MethodHandlers\WebDavUnlockMethodHandler.cs" />
-    <Compile Include="Stores\Locks\WebDavLockScope.cs" />
-    <Compile Include="Stores\Locks\WebDavLockType.cs" />
-    <Compile Include="Stores\Locks\WebDaveStoreItemLockInstance.cs" />
+    <Compile Include="Stores\BaseClasses\WebDavFileInfoBase.cs" />
+    <Compile Include="Stores\DiskStore\WebDavDiskStoreFileInfo.cs" />
+    <Compile Include="Stores\IWebDavFileInfo.cs" />
+    <Compile Include="Stores\Locks\Enums\WebDavLockScope.cs" />
+    <Compile Include="Stores\Locks\Enums\WebDavLockType.cs" />
+    <Compile Include="Stores\Locks\Interfaces\IWebDavStoreItemLockInstance.cs" />
+    <Compile Include="Stores\Locks\Interfaces\IWebDavStoreItemLock.cs" />
+    <Compile Include="Stores\Locks\WebDavStoreItemLockInstance.cs" />
+    <Compile Include="Stores\Locks\WebDavStoreItemLockInstanceBase.cs" />
     <Compile Include="Stores\Locks\WebDavStoreItemLock.cs" />
+    <Compile Include="Stores\Locks\WebDavStoreItemLockBase.cs" />
+    <Compile Include="Utilities\FlagsHelper.cs" />
+    <Compile Include="Utilities\HttpReciever.cs" />
+    <Compile Include="Utilities\LimitedConcurrencyLevelTaskScheduler.cs" />
     <Compile Include="Utilities\Md5Util.cs" />
     <Compile Include="Stores\BaseClasses\WebDavStoreDocumentBase.cs" />
     <Compile Include="Stores\BaseClasses\WebDavStoreBase.cs" />
@@ -126,6 +140,7 @@
     <Compile Include="Stores\IWebDavStoreCollection.cs" />
     <Compile Include="Stores\IWebDavStoreDocument.cs" />
     <Compile Include="Stores\IWebDavStoreItem.cs" />
+    <Compile Include="Utilities\WebDavCacheBase.cs" />
     <Compile Include="Utilities\WebDavStatusCode.cs" />
     <Compile Include="WebDavAuthType.cs" />
     <Compile Include="WebDavDisposableBase.cs" />
@@ -136,6 +151,7 @@
     <Compile Include="MethodHandlers\WebDavMethodHandlers.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
   </ItemGroup>
