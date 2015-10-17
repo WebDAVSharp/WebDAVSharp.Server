@@ -3,36 +3,30 @@
 namespace WebDAVSharp.Server.Adapters
 {
     /// <summary>
-    /// This is an interface-version of the parts of 
-    /// <see cref="HttpListenerContext" /> that
-    /// the 
-    /// <see cref="WebDavServer" /> requires to operator.
+    ///     This is an interface-version of the parts of
+    ///     <see cref="HttpListenerContext" /> that
+    ///     the
+    ///     <see cref="WebDavServer" /> requires to operator.
     /// </summary>
     /// <remarks>
-    /// The main purpose of this interface is to facilitate unit-testing.
+    ///     The main purpose of this interface is to facilitate unit-testing.
     /// </remarks>
     public interface IHttpListenerContext : IAdapter<HttpListenerContext>
     {
         /// <summary>
-        /// Gets the <see cref="IHttpListenerRequest" /> request adapter.
+        ///     Gets the <see cref="IHttpListenerRequest" /> request adapter.
         /// </summary>
         /// <value>
-        /// The request.
+        ///     The request.
         /// </value>
-        IHttpListenerRequest Request
-        {
-            get;
-        }
+        IHttpListenerRequest Request { get; }
 
         /// <summary>
-        /// Gets the <see cref="IHttpListenerResponse" /> response adapter.
+        ///     Gets the <see cref="IHttpListenerResponse" /> response adapter.
         /// </summary>
         /// <value>
-        /// The response.
+        ///     The response.
         /// </value>
-        IHttpListenerResponse Response
-        {
-            get;
-        }
+        IHttpListenerResponse Response { get; }
     }
 }

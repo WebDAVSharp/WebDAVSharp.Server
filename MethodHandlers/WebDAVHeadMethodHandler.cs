@@ -8,48 +8,51 @@ using WebDAVSharp.Server.Stores;
 namespace WebDAVSharp.Server.MethodHandlers
 {
     /// <summary>
-    /// This class implements the <c>PROPFIND</c> HTTP method for WebDAV#.
+    ///     This class implements the <c>PROPFIND</c> HTTP method for WebDAV#.
     /// </summary>
-    internal class WebDavHeadMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
+    internal class WebDavHeadMethodHandler : WebDavMethodHandlerBase
     {
-
         #region Properties
+
         /// <summary>
-        /// Gets the collection of the names of the HTTP methods handled by this instance.
+        ///     Gets the collection of the names of the HTTP methods handled by this instance.
         /// </summary>
         /// <value>
-        /// The names.
+        ///     The names.
         /// </value>
-        public IEnumerable<string> Names
+        public override IEnumerable<string> Names => new[]
         {
-            get
-            {
-                return new[]
-                {
-                    "HEAD"
-                };
-            }
-        }
+            "HEAD"
+        };
 
         #endregion
 
         #region Functions
 
         /// <summary>
-        /// Processes the request.
+        ///     Processes the request.
         /// </summary>
         /// <param name="server">The <see cref="WebDavServer" /> through which the request came in from the client.</param>
-        /// <param name="context">The 
-        /// <see cref="IHttpListenerContext" /> object containing both the request and response
-        /// objects to use.</param>
+        /// <param name="context">
+        ///     The
+        ///     <see cref="IHttpListenerContext" /> object containing both the request and response
+        ///     objects to use.
+        /// </param>
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
-        /// <exception cref="WebDavNotFoundException"><para>
-        ///   <paramref name="context" /> specifies a request for a store item that does not exist.</para>
-        /// <para>- or -</para>
-        /// <para>
-        ///   <paramref name="context" /> specifies a request for a store item that is not a document.</para></exception>
-        /// <exception cref="WebDavConflictException"><paramref name="context" /> specifies a request for a store item using a collection path that does not exist.</exception>
-        public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
+        /// <exception cref="WebDavNotFoundException">
+        ///     <para>
+        ///         <paramref name="context" /> specifies a request for a store item that does not exist.
+        ///     </para>
+        ///     <para>- or -</para>
+        ///     <para>
+        ///         <paramref name="context" /> specifies a request for a store item that is not a document.
+        ///     </para>
+        /// </exception>
+        /// <exception cref="WebDavConflictException">
+        ///     <paramref name="context" /> specifies a request for a store item using a
+        ///     collection path that does not exist.
+        /// </exception>
+        public override void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
         {
             // Get the parent collection of the item
             IWebDavStoreCollection collection = GetParentCollection(server, store, context.Request.Url);
@@ -60,10 +63,10 @@ namespace WebDAVSharp.Server.MethodHandlers
             /***************************************************************************************************
             * Send the response
             ***************************************************************************************************/
-            
+
             // HttpStatusCode doesn't contain WebDav status codes, but HttpWorkerRequest can handle these WebDav status codes
-            context.Response.StatusCode = (int)HttpStatusCode.OK;
-            context.Response.StatusDescription = HttpWorkerRequest.GetStatusDescription((int)HttpStatusCode.OK);
+            context.Response.StatusCode = (int) HttpStatusCode.OK;
+            context.Response.StatusDescription = HttpWorkerRequest.GetStatusDescription((int) HttpStatusCode.OK);
 
             // set the headers of the response
             context.Response.ContentLength64 = 0;
@@ -74,6 +77,5 @@ namespace WebDAVSharp.Server.MethodHandlers
         }
 
         #endregion
-
     }
 }

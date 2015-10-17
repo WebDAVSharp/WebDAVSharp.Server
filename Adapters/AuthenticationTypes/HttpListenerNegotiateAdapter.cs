@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Net;
 using System.Security.Principal;
-using System.Threading;
 
 namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
 {
     /// <summary>
-    /// This 
-    /// <see cref="IHttpListener" /> implementation wraps around a
-    /// <see cref="HttpListener" /> instance.
+    ///     This
+    ///     <see cref="IHttpListener" /> implementation wraps around a
+    ///     <see cref="HttpListener" /> instance.
     /// </summary>
-    internal sealed class HttpListenerNegotiateAdapter : WebDavDisposableBase, IHttpListener, IAdapter<HttpListener>
+    internal sealed class HttpListenerNegotiateAdapter : WebDavDisposableBase, IHttpListener
     {
         #region Private Variables
 
@@ -18,55 +17,41 @@ namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
 
         #endregion
 
-        #region Properties
-        /// <summary>
-        /// Gets the internal instance that was adapted for WebDAV#.
-        /// </summary>
-        /// <value>
-        /// The adapted instance.
-        /// </value>
-        public HttpListener AdaptedInstance
-        {
-            get
-            {
-                return _listener;
-            }
-        }
-
-        /// <summary>
-        /// Gets the Uniform Resource Identifier (
-        /// <see cref="Uri" />) prefixes handled by the
-        /// adapted 
-        /// <see cref="HttpListener" /> object.
-        /// </summary>
-        public HttpListenerPrefixCollection Prefixes
-        {
-            get
-            {
-                return _listener.Prefixes;
-            }
-        }
-        #endregion
-
         #region Constructor
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpListenerNegotiateAdapter" /> class.
+        ///     Initializes a new instance of the <see cref="HttpListenerNegotiateAdapter" /> class.
         /// </summary>
         internal HttpListenerNegotiateAdapter()
         {
             _listener = new HttpListener
             {
                 AuthenticationSchemes = AuthenticationSchemes.Negotiate,
-                UnsafeConnectionNtlmAuthentication = false
+                UnsafeConnectionNtlmAuthentication = false,
+                TimeoutManager =
+                {
+                    RequestQueue = TimeSpan.FromMinutes(5),
+                    DrainEntityBody = TimeSpan.FromMinutes(5),
+                    EntityBody = TimeSpan.FromMinutes(5),
+                    HeaderWait = TimeSpan.FromMinutes(5),
+                    IdleConnection = TimeSpan.FromMinutes(5),
+                    MinSendBytesPerSecond = 300
+                },
+                IgnoreWriteExceptions = true
             };
         }
+
         #endregion
 
         #region Function Overrides
+
         /// <summary>
-        /// Releases unmanaged and - optionally - managed resources
+        ///     Releases unmanaged and - optionally - managed resources
         /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <param name="disposing">
+        ///     <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only
+        ///     unmanaged resources.
+        /// </param>
         protected override void Dispose(bool disposing)
         {
             if (_listener.IsListening)
@@ -75,39 +60,30 @@ namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        ///     Gets the internal instance that was adapted for WebDAV#.
+        /// </summary>
+        /// <value>
+        ///     The adapted instance.
+        /// </value>
+        public HttpListener AdaptedInstance => _listener;
+
+        /// <summary>
+        ///     Gets the Uniform Resource Identifier (
+        ///     <see cref="Uri" />) prefixes handled by the
+        ///     adapted
+        ///     <see cref="HttpListener" /> object.
+        /// </summary>
+        public HttpListenerPrefixCollection Prefixes => _listener.Prefixes;
+
+        #endregion
+
         #region Public Functions
 
         /// <summary>
-        /// Waits for a request to come in to the web server and returns a
-        /// <see cref="IHttpListenerContext" /> adapter around it.
-        /// </summary>
-        /// <param name="abortEvent">A 
-        /// <see cref="EventWaitHandle" /> to use for aborting the wait. If this
-        /// event becomes set before a request comes in, this method will return 
-        /// <c>null</c>.</param>
-        /// <returns>
-        /// A 
-        /// <see cref="IHttpListenerContext" /> adapter object for a request;
-        /// or 
-        /// <c>null</c> if the wait for a request was aborted due to 
-        /// <paramref name="abortEvent" /> being set.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">abortEvent</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="abortEvent" /> is <c>null</c>.</exception>
-        public IHttpListenerContext GetContext(EventWaitHandle abortEvent)
-        {
-            if (abortEvent == null)
-                throw new ArgumentNullException("abortEvent");
-
-            IAsyncResult ar = _listener.BeginGetContext(null, null);
-            int index = WaitHandle.WaitAny(new[] {abortEvent, ar.AsyncWaitHandle});
-            if (index != 1) return null;
-            HttpListenerContext context = _listener.EndGetContext(ar);
-            return new HttpListenerContextAdapter(context);
-        }
-        
-        /// <summary>
-        /// Allows the adapted <see cref="HttpListener" /> to receive incoming requests.
+        ///     Allows the adapted <see cref="HttpListener" /> to receive incoming requests.
         /// </summary>
         public void Start()
         {
@@ -115,7 +91,7 @@ namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
         }
 
         /// <summary>
-        /// Causes the adapted <see cref="HttpListener" /> to stop receiving incoming requests.
+        ///     Causes the adapted <see cref="HttpListener" /> to stop receiving incoming requests.
         /// </summary>
         public void Stop()
         {

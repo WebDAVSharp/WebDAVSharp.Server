@@ -1,66 +1,37 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Net;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Principal;
-using System.Threading;
 using Microsoft.Win32.SafeHandles;
 
 namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
 {
-    class HttpListenerBasicAdapter : WebDavDisposableBase, IHttpListener, IAdapter<HttpListener>
+    internal class HttpListenerBasicAdapter : WebDavDisposableBase, IHttpListener
     {
-        #region Imports
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool LogonUser(String lpszUsername, String lpszDomain, String lpszPassword, int dwLogonType, int dwLogonProvider, out SafeTokenHandle phToken);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        public static extern bool CloseHandle(IntPtr handle);
-
-        #endregion
-
         public HttpListenerBasicAdapter()
         {
             AdaptedInstance = new HttpListener
             {
                 AuthenticationSchemes = AuthenticationSchemes.Basic,
-                UnsafeConnectionNtlmAuthentication = false
+                UnsafeConnectionNtlmAuthentication = false,
+                TimeoutManager =
+                {
+                    RequestQueue = TimeSpan.FromMinutes(5),
+                    DrainEntityBody = TimeSpan.FromMinutes(5),
+                    EntityBody = TimeSpan.FromMinutes(5),
+                    HeaderWait = TimeSpan.FromMinutes(5),
+                    IdleConnection = TimeSpan.FromMinutes(5),
+                    MinSendBytesPerSecond = 300
+                },
+                IgnoreWriteExceptions = true
             };
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (AdaptedInstance.IsListening)
-                AdaptedInstance.Close();
-        }
-
-        public HttpListener AdaptedInstance
-        {
-            get;
-            private set;
-        }
-
-        public IHttpListenerContext GetContext(EventWaitHandle abortEvent)
-        {
-            if (abortEvent == null)
-                throw new ArgumentNullException("abortEvent");
-
-            IAsyncResult ar = AdaptedInstance.BeginGetContext(null, null);
-            int index = WaitHandle.WaitAny(new[] { abortEvent, ar.AsyncWaitHandle });
-            if (index != 1)
-                return null;
-            HttpListenerContext context = AdaptedInstance.EndGetContext(ar);
-            return new HttpListenerContextAdapter(context);
-        }
-
-        public HttpListenerPrefixCollection Prefixes
-        {
-            get
-            {
-                return AdaptedInstance.Prefixes;
-            }
-        }
+        public HttpListener AdaptedInstance { get; }
+        public HttpListenerPrefixCollection Prefixes => AdaptedInstance.Prefixes;
 
         public void Start()
         {
@@ -74,32 +45,36 @@ namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
 
         public IIdentity GetIdentity(IHttpListenerContext context)
         {
-            HttpListenerBasicIdentity ident = (HttpListenerBasicIdentity)context.AdaptedInstance.User.Identity;
+            HttpListenerBasicIdentity ident = (HttpListenerBasicIdentity) context.AdaptedInstance.User.Identity;
             string domain = ident.Name.Split('\\')[0];
             string username = ident.Name.Split('\\')[1];
-            var token = GetToken(domain, username, ident.Password);
+            SafeTokenHandle token = GetToken(domain, username, ident.Password);
             return new WindowsIdentity(token.DangerousGetHandle());
         }
 
-
+        protected override void Dispose(bool disposing)
+        {
+            if (AdaptedInstance.IsListening)
+                AdaptedInstance.Close();
+        }
 
         internal static SafeTokenHandle GetToken(string domainName,
             string userName, string password)
         {
             SafeTokenHandle safeTokenHandle;
 
-            const int LOGON32_PROVIDER_DEFAULT = 0;
+            const int logon32ProviderDefault = 0;
             //This parameter causes LogonUser to create a primary token.
-            const int LOGON32_LOGON_INTERACTIVE = 2;
+            const int logon32LogonInteractive = 2;
 
             // Call LogonUser to obtain a handle to an access token.
             bool returnValue = LogonUser(userName, domainName, password,
-                LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT,
+                logon32LogonInteractive, logon32ProviderDefault,
                 out safeTokenHandle);
 
             if (returnValue) return safeTokenHandle;
             int ret = Marshal.GetLastWin32Error();
-            throw new System.ComponentModel.Win32Exception(ret);
+            throw new Win32Exception(ret);
         }
 
         public sealed class SafeTokenHandle : SafeHandleZeroOrMinusOneIsInvalid
@@ -113,6 +88,7 @@ namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             [SuppressUnmanagedCodeSecurity]
             [return: MarshalAs(UnmanagedType.Bool)]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             private static extern bool CloseHandle(IntPtr handle);
 
             protected override bool ReleaseHandle()
@@ -120,5 +96,15 @@ namespace WebDAVSharp.Server.Adapters.AuthenticationTypes
                 return CloseHandle(handle);
             }
         }
+
+        #region Imports
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool LogonUser(String lpszUsername, String lpszDomain, String lpszPassword, int dwLogonType, int dwLogonProvider, out SafeTokenHandle phToken);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        public static extern bool CloseHandle(IntPtr handle);
+
+        #endregion
     }
 }
