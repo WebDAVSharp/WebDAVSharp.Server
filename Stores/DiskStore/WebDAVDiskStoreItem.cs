@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Security.Principal;
 using System.Threading;
-using Common.Logging;
 using WebDAVSharp.Server.Stores.BaseClasses;
 
 namespace WebDAVSharp.Server.Stores.DiskStore
@@ -17,17 +16,19 @@ namespace WebDAVSharp.Server.Stores.DiskStore
     /// </summary>
     public class WebDavDiskStoreItem : WebDavStoreItemBase
     {
+
+        #region Variables
+
         /// <summary>
         /// Gets the Identity of the person logged on via HTTP Request.
         /// </summary>
         protected readonly WindowsIdentity Identity;
 
-        /// <summary>
-        /// Log
-        /// </summary>
-        protected ILog Log;
-        private readonly WebDavDiskStoreCollection _parentCollection;
         private readonly string _path;
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebDavDiskStoreItem" /> class.
@@ -41,16 +42,20 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         /// <param name="path">The path that this <see cref="WebDavDiskStoreItem" /> maps to.</param>
         /// <exception cref="System.ArgumentNullException">path</exception>
         /// <exception cref="ArgumentNullException"><paramref name="path" /> is <c>null</c> or empty.</exception>
-        protected WebDavDiskStoreItem(WebDavDiskStoreCollection parentCollection, string path) : base(parentCollection, path)
+        protected WebDavDiskStoreItem(WebDavDiskStoreCollection parentCollection, string path)
+            : base(parentCollection, path)
         {
             if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException("path");
-
-            _parentCollection = parentCollection;
             _path = path;
+
             Identity = (WindowsIdentity)Thread.GetData(Thread.GetNamedDataSlot(WebDavServer.HttpUser));
-            Log = LogManager.GetCurrentClassLogger();
+            
         }
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Gets the path to this <see cref="WebDavDiskStoreItem" />.
@@ -62,8 +67,6 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                 return _path;
             }
         }
-
-        #region IWebDAVStoreItem Members
 
         /// <summary>
         /// Gets or sets the name of this <see cref="IWebDavStoreItem" />.
@@ -137,5 +140,8 @@ namespace WebDAVSharp.Server.Stores.DiskStore
         }
 
         #endregion
+
+
+        
     }
 }

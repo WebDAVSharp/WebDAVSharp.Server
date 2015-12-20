@@ -12,6 +12,8 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// </summary>
     internal class WebDavHeadMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
+
+        #region Properties
         /// <summary>
         /// Gets the collection of the names of the HTTP methods handled by this instance.
         /// </summary>
@@ -28,6 +30,10 @@ namespace WebDAVSharp.Server.MethodHandlers
                 };
             }
         }
+
+        #endregion
+
+        #region Functions
 
         /// <summary>
         /// Processes the request.
@@ -66,5 +72,8 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             context.Response.Close();
         }
+
+        #endregion
+
     }
 }

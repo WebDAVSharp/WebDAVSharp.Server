@@ -7,8 +7,13 @@ namespace WebDAVSharp.Server
     /// </summary>
     public abstract class WebDavDisposableBase : IDisposable
     {
+        #region Properties
+
         private bool _isDisposed;
 
+        #endregion
+
+        #region Functions
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -32,10 +37,16 @@ namespace WebDAVSharp.Server
                 throw new ObjectDisposedException(GetType().FullName);
         }
 
+        #endregion
+
+        #region Abstract Functions
+
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected abstract void Dispose(bool disposing);
+
+        #endregion
     }
 }

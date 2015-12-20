@@ -10,6 +10,8 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// </summary>
     internal static class WebDavMethodHandlers
     {
+        #region Properties
+
         private static readonly List<IWebDavMethodHandler> _BuiltIn = new List<IWebDavMethodHandler>();
 
         /// <summary>
@@ -30,6 +32,9 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
         }
 
+        #endregion
+
+        #region Static Functions
         /// <summary>
         /// Scans the WebDAV# assemblies for known <see cref="IWebDavMethodHandler"/>
         /// types.
@@ -47,5 +52,7 @@ namespace WebDAVSharp.Server.MethodHandlers
 
             _BuiltIn.AddRange(methodHandlerInstances);
         }
+
+        #endregion
     }
 }

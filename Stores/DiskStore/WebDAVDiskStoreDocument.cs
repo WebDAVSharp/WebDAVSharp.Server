@@ -14,6 +14,8 @@ namespace WebDAVSharp.Server.Stores.DiskStore
     [DebuggerDisplay("File ({Name})")]
     public sealed class WebDavDiskStoreDocument : WebDavDiskStoreItem, IWebDavStoreDocument
     {
+        #region Constructor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WebDavDiskStoreDocument" /> class.
         /// </summary>
@@ -31,7 +33,9 @@ namespace WebDAVSharp.Server.Stores.DiskStore
             // Do nothing here
         }
 
-        #region IWebDAVStoreDocument Members
+        #endregion
+
+        #region Functions
 
         /// <summary>
         /// Gets the size of the document in bytes.
@@ -66,11 +70,6 @@ namespace WebDAVSharp.Server.Stores.DiskStore
                 return Md5Util.Md5HashStringForUtf8String(ItemPath + ModificationDate + Hidden + Size);
             }
         }
-
-
-        #endregion
-
-        #region IWebDAVStoreDocument Members
 
         /// <summary>
         /// Opens a <see cref="Stream" /> object for the document, in read-only mode.

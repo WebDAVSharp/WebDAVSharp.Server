@@ -1,7 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Security.Principal;
+using System.Text;
+using System.Threading;
 using WebDAVSharp.Server.Adapters;
 using WebDAVSharp.Server.Stores;
+using WebDAVSharp.Server.Stores.Locks;
 
 namespace WebDAVSharp.Server.MethodHandlers
 {
@@ -10,6 +15,9 @@ namespace WebDAVSharp.Server.MethodHandlers
     /// </summary>
     internal class WebDavUnlockMethodHandler : WebDavMethodHandlerBase, IWebDavMethodHandler
     {
+
+        #region Properties
+
         /// <summary>
         /// Gets the collection of the names of the HTTP methods handled by this instance.
         /// </summary>
@@ -27,6 +35,9 @@ namespace WebDAVSharp.Server.MethodHandlers
             }
         }
 
+        #endregion
+
+        #region Functions
         /// <summary>
         /// Processes the request.
         /// </summary>
@@ -37,17 +48,14 @@ namespace WebDAVSharp.Server.MethodHandlers
         /// <param name="store">The <see cref="IWebDavStore" /> that the <see cref="WebDavServer" /> is hosting.</param>
         public void ProcessRequest(WebDavServer server, IHttpListenerContext context, IWebDavStore store)
         {
-            // Get the parent collection of the item
-            IWebDavStoreCollection collection = GetParentCollection(server, store, context.Request.Url);
-
-            // Get the item from the collection
-            IWebDavStoreItem item = GetItemFromCollection(collection, context.Request.Url);
-
             /***************************************************************************************************
             * Send the response
             ***************************************************************************************************/
-
-            context.SendSimpleResponse(HttpStatusCode.NoContent);
+            WindowsIdentity Identity = (WindowsIdentity)Thread.GetData(Thread.GetNamedDataSlot(WebDavServer.HttpUser));
+            context.SendSimpleResponse(WebDavStoreItemLock.UnLock(context.Request.Url, GetLockTokenHeader(context.Request), Identity.Name));
         }
+
+        #endregion
+
     }
 }

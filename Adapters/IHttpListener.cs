@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Security.Principal;
 using System.Threading;
 
 namespace WebDAVSharp.Server.Adapters
@@ -55,5 +56,12 @@ namespace WebDAVSharp.Server.Adapters
         /// Causes the adapted <see cref="HttpListener" /> to stop receiving incoming requests.
         /// </summary>
         void Stop();
+
+        /// <summary>
+        /// Returns the windows Idenity to use for the request.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        IIdentity GetIdentity(IHttpListenerContext context);
     }
 }
